@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @EnableMethodSecurity
-@RequestMapping("/product")
+@RequestMapping({"/product", "/products"})
 @Tag(name = "Produto")
 public class ProductController {
 
@@ -33,12 +33,13 @@ public class ProductController {
     return ResponseEntity.ok().body(productCreated);
   }
 
-  @GetMapping
+  @PostMapping("/search")
   public ResponseEntity<?> listProducts(
       @RequestBody(required = false) ProductFilterDTO filter,
       @RequestParam(name = "page", defaultValue = "0") int page,
-      @RequestParam(name = "size", defaultValue = "10") int size) {
-    var result = productInputBoundary.list(filter, page, size);
+      @RequestParam(name = "size", defaultValue = "20") int size) {
+    ProductFilterDTO productFilter = filter != null ? filter : new ProductFilterDTO();
+    var result = productInputBoundary.list(productFilter, page, size);
     return ResponseEntity.ok().body(result);
   }
 

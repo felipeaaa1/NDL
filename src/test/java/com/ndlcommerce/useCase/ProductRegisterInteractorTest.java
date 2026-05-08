@@ -5,20 +5,24 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.ndlcommerce.adapters.persistence.product.ProductDataMapper;
+import com.ndlcommerce.config.PaginatedResult;
 import com.ndlcommerce.entity.factory.implementation.CommonProductFactoryImp;
 import com.ndlcommerce.entity.factory.interfaces.ProductFactory;
 import com.ndlcommerce.useCase.interfaces.brand.BrandRegisterDsGateway;
 import com.ndlcommerce.useCase.interfaces.category.CategoryRegisterDsGateway;
 import com.ndlcommerce.useCase.interfaces.product.ProductPresenter;
 import com.ndlcommerce.useCase.interfaces.product.ProductRegisterDsGateway;
+import com.ndlcommerce.useCase.request.product.ProductDbRequestDTO;
 import com.ndlcommerce.useCase.request.product.ProductRequestDTO;
 import com.ndlcommerce.useCase.request.product.ProductResponseDTO;
 import com.ndlcommerce.useCase.request.product.ProductUpdateRequestDTO;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 class ProductRegisterInteractorTest {
 
@@ -164,6 +168,32 @@ class ProductRegisterInteractorTest {
     assertThat(response).isSameAs(successResponse);
     verify(productDsGateway).delete(productId);
     verify(productPresenter).prepareSuccessView(null);
+  }
+
+  @Test
+  void givenNullFilter_whenListProducts_thenUseEmptyFilterAndReturnListSuccess() {
+    PaginatedResult<ProductDataMapper> emptyProducts =
+        new PaginatedResult<>(List.of(), 0, 10, 0, 0, true, true);
+    PaginatedResult<ProductResponseDTO> emptyResponse =
+        new PaginatedResult<>(List.of(), 0, 10, 0, 0, true, true);
+    ArgumentCaptor<ProductDbRequestDTO> filterCaptor =
+        ArgumentCaptor.forClass(ProductDbRequestDTO.class);
+
+    when(productDsGateway.list(any(ProductDbRequestDTO.class), eq(0), eq(10)))
+        .thenReturn(emptyProducts);
+    when(productPresenter.prepareListSuccessView(any())).thenReturn(emptyResponse);
+
+    PaginatedResult<ProductResponseDTO> response = interactor.list(null, 0, 10);
+
+    assertThat(response).isSameAs(emptyResponse);
+    verify(productDsGateway).list(filterCaptor.capture(), eq(0), eq(10));
+    ProductDbRequestDTO capturedFilter = filterCaptor.getValue();
+    assertThat(capturedFilter.getName()).isNull();
+    assertThat(capturedFilter.getDescription()).isNull();
+    assertThat(capturedFilter.getBrand()).isNull();
+    assertThat(capturedFilter.getCategory()).isNull();
+    assertThat(capturedFilter.isActive()).isTrue();
+    verify(productPresenter).prepareListSuccessView(any());
   }
 
   @Test

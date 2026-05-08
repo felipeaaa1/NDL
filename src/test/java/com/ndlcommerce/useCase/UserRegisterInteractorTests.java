@@ -1,5 +1,6 @@
 package com.ndlcommerce.useCase;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -16,9 +17,11 @@ import com.ndlcommerce.useCase.request.user.UserDbRequestDTO;
 import com.ndlcommerce.useCase.request.user.UserRequestDTO;
 import com.ndlcommerce.useCase.request.user.UserResponseDTO;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 public class UserRegisterInteractorTests {
 
@@ -68,6 +71,26 @@ public class UserRegisterInteractorTests {
 
     verify(userDsGateway, times(1)).save(any(UserDbRequestDTO.class));
     verify(userPresenter, times(1)).prepareSuccessView(any(UserResponseDTO.class));
+  }
+
+  @Test
+  void givenNullFilter_whenListUsers_thenUseEmptyFilterAndReturnListSuccess() {
+    ArgumentCaptor<UserDbRequestDTO> filterCaptor =
+        ArgumentCaptor.forClass(UserDbRequestDTO.class);
+    List<UserResponseDTO> emptyResponse = List.of();
+
+    when(userDsGateway.list(any(UserDbRequestDTO.class))).thenReturn(List.of());
+    when(userPresenter.prepareListSuccessView(any())).thenReturn(emptyResponse);
+
+    List<UserResponseDTO> response = interactor.list(null, 0, 10);
+
+    assertThat(response).isSameAs(emptyResponse);
+    verify(userDsGateway).list(filterCaptor.capture());
+    UserDbRequestDTO capturedFilter = filterCaptor.getValue();
+    assertThat(capturedFilter.getLogin()).isNull();
+    assertThat(capturedFilter.getEmail()).isNull();
+    assertThat(capturedFilter.getType()).isNull();
+    verify(userPresenter).prepareListSuccessView(any());
   }
 
   @Test

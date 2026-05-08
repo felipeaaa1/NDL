@@ -12,6 +12,8 @@ public class UserFilterDTO {
   String email;
   UserType type;
 
+  public UserFilterDTO() {}
+
   public UserFilterDTO(String login, String email, String type) {
     this.login = login;
     this.email = email;

@@ -34,12 +34,13 @@ public class UserController {
     return ResponseEntity.ok().body(userCreated);
   }
 
-  @GetMapping
+  @PostMapping("/search")
   public ResponseEntity<?> listUsers(
-      @RequestBody UserFilterDTO filter,
+      @RequestBody(required = false) UserFilterDTO filter,
       @RequestParam(name = "page", defaultValue = "0") int page,
       @RequestParam(name = "size", defaultValue = "10") int size) {
-    var result = userInput.list(filter, page, size);
+    UserFilterDTO userFilter = filter != null ? filter : new UserFilterDTO();
+    var result = userInput.list(userFilter, page, size);
     return ResponseEntity.ok().body(result);
   }
 

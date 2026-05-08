@@ -25,13 +25,13 @@ public class CustomerController {
     this.customerInput = customerInput;
   }
 
-  @GetMapping
+  @PostMapping("/search")
   public ResponseEntity<?> listCustomers(
-      @RequestBody CustomerFilterDTO filter,
+      @RequestBody(required = false) CustomerFilterDTO filter,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "103") int size) {
-
-    var result = customerInput.list(filter, page, size);
+    CustomerFilterDTO customerFilter = filter != null ? filter : new CustomerFilterDTO();
+    var result = customerInput.list(customerFilter, page, size);
     return ResponseEntity.ok().body(result);
   }
 
