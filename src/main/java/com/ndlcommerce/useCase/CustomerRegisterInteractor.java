@@ -84,11 +84,11 @@ public class CustomerRegisterInteractor implements CustomerInputBoundary {
     // DTO usado no gateway (similar ao UserDbRequestDTO)
     CustomerDbRequestDTO dbFilter =
         new CustomerDbRequestDTO(
-            filter.getName(),
-            filter.getContact(),
-            filter.getAddress(),
-            filter.getActive() != null ? filter.getActive() : true,
-            filter.getUserLogin());
+            filter != null ? filter.getName() : null,
+            filter != null ? filter.getContact() : null,
+            filter != null ? filter.getAddress() : null,
+            filter != null && filter.getActive() != null ? filter.getActive() : true,
+            filter != null ? filter.getUserLogin() : null);
 
     List<CustomerDataMapper> list = customerRegisterDsGateway.list(dbFilter, page, size);
 

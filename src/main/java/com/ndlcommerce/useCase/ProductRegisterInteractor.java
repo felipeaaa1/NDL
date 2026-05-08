@@ -74,10 +74,10 @@ public class ProductRegisterInteractor implements ProductInputBoundary {
   public PaginatedResult<ProductResponseDTO> list(ProductFilterDTO filter, int page, int size) {
     ProductDbRequestDTO productDbRequestDTO =
         new ProductDbRequestDTO(
-            filter.getName(),
-            filter.getDescription(),
-            filter.getBrand(),
-            filter.getCategory(),
+            filter != null ? filter.getName() : null,
+            filter != null ? filter.getDescription() : null,
+            filter != null ? filter.getBrand() : null,
+            filter != null ? filter.getCategory() : null,
             true);
 
     PaginatedResult<ProductDataMapper> productDataMapperList =

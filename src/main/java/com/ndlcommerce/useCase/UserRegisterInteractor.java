@@ -77,7 +77,9 @@ public class UserRegisterInteractor implements UserInputBoundary {
 
     UserDbRequestDTO userDbRequestDTO =
         new UserDbRequestDTO(
-            userFilterDTO.getLogin(), userFilterDTO.getEmail(), userFilterDTO.getType());
+            userFilterDTO != null ? userFilterDTO.getLogin() : null,
+            userFilterDTO != null ? userFilterDTO.getEmail() : null,
+            userFilterDTO != null ? userFilterDTO.getType() : null);
 
     List<UserDataMapper> list = userDsGateway.list(userDbRequestDTO);
     List<UserResponseDTO> responseList =

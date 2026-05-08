@@ -36,13 +36,14 @@ public class BrandController {
     return ResponseEntity.ok().body(brandCreated);
   }
 
-  @GetMapping
+  @PostMapping("/search")
   @Operation(summary = "Listar", description = "End-point para listar todas as Marcas")
   public ResponseEntity<?> listBrands(
       @RequestBody(required = false) BrandRequestDTO filter,
       @RequestParam(name = "page", defaultValue = "0") int page,
       @RequestParam(name = "size", defaultValue = "10") int size) {
-    var result = brandInputBoundary.list(filter, page, size);
+    BrandRequestDTO brandFilter = filter != null ? filter : new BrandRequestDTO(null);
+    var result = brandInputBoundary.list(brandFilter, page, size);
     return ResponseEntity.ok().body(result);
   }
 

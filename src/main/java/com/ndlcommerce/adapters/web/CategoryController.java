@@ -38,13 +38,14 @@ public class CategoryController {
     return ResponseEntity.ok().body(productCreated);
   }
 
-  @GetMapping
+  @PostMapping("/search")
   @Operation(summary = "Listar", description = "End-point para listar todas as Categorias")
   public ResponseEntity<?> listCategories(
       @RequestBody(required = false) CategoryRequestDTO filter,
       @RequestParam(name = "page", defaultValue = "0") int page,
       @RequestParam(name = "size", defaultValue = "10") int size) {
-    var result = categoryInputBoundary.list(filter, page, size);
+    CategoryRequestDTO categoryFilter = filter != null ? filter : new CategoryRequestDTO();
+    var result = categoryInputBoundary.list(categoryFilter, page, size);
     return ResponseEntity.ok().body(result);
   }
 

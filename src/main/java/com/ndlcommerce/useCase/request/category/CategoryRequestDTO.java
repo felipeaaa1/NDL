@@ -13,6 +13,8 @@ public class CategoryRequestDTO {
 
   private UUID parentId;
 
+  public CategoryRequestDTO() {}
+
   public CategoryRequestDTO(String name, UUID parentId) {
     this.name = name;
     this.parentId = parentId;
