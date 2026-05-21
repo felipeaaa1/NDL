@@ -1,93 +1,43 @@
-#se uma aplica��o quiser se conectar ao servidor de autoriza��o
-# spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:8080
-
 spring:
   application:
     name: ndlCommerce
-    #colocar qual application vai rodar, no caso aqui ta rodando o "application-hmg.yml" ou as config no fim desse .yml
-  #  profiles:
-  #    active: hmg
-  # habilitar cor no log
   output:
     ansi:
       enabled: ALWAYS
-  #  configura��es de banco
   datasource:
     url: ${DB_URL}
-    username: ${DB_USER:postgres}
+    username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
-  config:
-    import: optional:file:.env[.properties]
   jpa:
     show-sql: true
     properties:
       hibernate.format_sql: true
       hibernate.default_schema: ecommerce
-  #  security:
-#    oauth2:
-#      client:
-#        registration:
-#          google:
-#            client-id: ${GOOGLE_ID}
-#            client-secret: ${GOOGLE_SECRET}
   flyway:
     enabled: false
     validate-on-migrate: true
   sendgrid:
-    api-key: ${SENDGRID_TOKEN:testetoken0101010101}
+    api-key: ${SENDGRID_TOKEN}
   jackson:
     deserialization:
       fail-on-unknown-properties: true
-
-  springdoc:
-    override-with-generic-response: false
 logging:
   pattern:
-  #    console: '%clr(%d{dd-MM-yyyy HH:mm:ss}){faint} %clr(%5p) %clr([%t]){faint} %clr(%-40.40logger){cyan} %clr(:){yellow} %m%n'
-  #  file:
-  #    name: app.log
+      console: '%clr(%d{dd-MM-yyyy HH:mm:ss}){faint} %clr(%5p) %clr([%t]){faint} %clr(%-40.40logger){cyan} %clr(:){yellow} %m%n'
   level:
     root: warn
-    com:
-      github:
-        felipeaaa1: info
 management:
-  server:
-    port: 9090
   endpoints:
     web:
       exposure:
-        #        se quiser colocar s� alguns colocar:
-        #        include: beans, logfile, health
-        include: '*'
-
+        include: health,info
 api:
   security:
     token:
-      secret: ${TOKEN_SECRET:passkey}
-  versao: ${VERSION:1.0.0}
-
+      secret: ${TOKEN_SECRET}
+  versao: 1.0.0
 app:
-  domain: ${DOMINIO_APLICACAO:localhost:8080}
-
----
-spring:
-  config:
-    activate:
-      on:profile: prod
-    dominio:
-      value: ${DOMINIO_APLICACAO}
-  jpa:
-    show-sql: true
-
----
-spring:
-  config:
-    activate:
-      on:profile: hmg
-    dominio:
-      value: ${DOMINIO_APLICACAO:localhost:8080}
-
-  jpa:
-    show-sql: true
+  domain: ${DOMINIO_APLICACAO}
+springdoc:
+  override-with-generic-response: false

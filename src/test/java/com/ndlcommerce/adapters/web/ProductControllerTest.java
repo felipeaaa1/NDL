@@ -30,8 +30,7 @@ class ProductControllerTest {
     MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     PaginatedResult<ProductResponseDTO> response =
         new PaginatedResult<>(List.of(), 0, 20, 0, 0, true, true);
-    ArgumentCaptor<ProductFilterDTO> filterCaptor =
-        ArgumentCaptor.forClass(ProductFilterDTO.class);
+    ArgumentCaptor<ProductFilterDTO> filterCaptor = ArgumentCaptor.forClass(ProductFilterDTO.class);
 
     when(productInputBoundary.list(any(ProductFilterDTO.class), eq(0), eq(20)))
         .thenReturn(response);
@@ -58,8 +57,7 @@ class ProductControllerTest {
         new PaginatedResult<>(List.of(), 0, 20, 0, 0, true, true);
     UUID brandId = UUID.randomUUID();
     UUID categoryId = UUID.randomUUID();
-    ArgumentCaptor<ProductFilterDTO> filterCaptor =
-        ArgumentCaptor.forClass(ProductFilterDTO.class);
+    ArgumentCaptor<ProductFilterDTO> filterCaptor = ArgumentCaptor.forClass(ProductFilterDTO.class);
 
     when(productInputBoundary.list(any(ProductFilterDTO.class), eq(0), eq(20)))
         .thenReturn(response);
