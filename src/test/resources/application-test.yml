@@ -10,8 +10,14 @@ spring:
     hibernate:
       ddl-auto: create-drop       # Cria as tabelas do zero e apaga ao final dos testes
     database-platform: org.hibernate.dialect.H2Dialect
-    show-sql: true               # Quero ver as palhaçadinha acontecendo
+    show-sql: true
+  sendgrid:
+    api-key: test-sendgrid-token
+  flyway:
+    enabled: false
 api:
   security:
     token:
-      secret: ${TOKEN_SECRET:teste}
+      secret: "teste"
+app:
+  domain: "localhost:8080"
