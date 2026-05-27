@@ -33,13 +33,12 @@ public class ProductController {
     return ResponseEntity.ok().body(productCreated);
   }
 
-  @PostMapping("/search")
+  @GetMapping
   public ResponseEntity<?> listProducts(
-      @RequestBody(required = false) ProductFilterDTO filter,
+      ProductFilterDTO filter,
       @RequestParam(name = "page", defaultValue = "0") int page,
       @RequestParam(name = "size", defaultValue = "20") int size) {
-    ProductFilterDTO productFilter = filter != null ? filter : new ProductFilterDTO();
-    var result = productInputBoundary.list(productFilter, page, size);
+    var result = productInputBoundary.list(filter, page, size);
     return ResponseEntity.ok().body(result);
   }
 
