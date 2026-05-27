@@ -52,16 +52,25 @@ As migrações ficam em `src/main/resources/db/migration`.
 
 ### 🔧 Configuração
 
-Crie o arquivo `ndlFlywayConfig.conf` na raiz do projeto:
+Adicione um profile `flyway` no `settings.xml` do Maven:
 
-```properties
-flyway.url=jdbc:postgresql://<HOST>:<PORT>/<DATABASE>
-flyway.user=<USUARIO>
-flyway.password=<SENHA>
+```xml
+<settings>
+    <profiles>
+        <profile>
+            <id>flyway</id>
+            <properties>
+                <flyway.url>jdbc:postgresql://localhost:5433/ndlcommerce</flyway.url>
+                <flyway.user>ndl_user</flyway.user>
+                <flyway.password>ndl_pass</flyway.password>
+            </properties>
+        </profile>
+    </profiles>
+</settings>
 ```
 ### ▶️ Executando as migrações
 ``` bash
-mvn "-Dflyway.configFiles=ndlFlywayConfig.conf" flyway:migrate
+mvn flyway:migrate -Pflyway
 ```
 ## 📌 Status do Projeto
 
