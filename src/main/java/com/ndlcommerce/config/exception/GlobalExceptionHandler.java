@@ -4,21 +4,38 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.ndlcommerce.adapters.web.dto.ErrorFieldDTO;
 import com.ndlcommerce.adapters.web.dto.ErrorResponseDTO;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.*;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.method.ParameterValidationResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.View;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+  private final View error;
+  private final DefaultErrorAttributes errorAttributes;
+
+  public GlobalExceptionHandler(View error, DefaultErrorAttributes errorAttributes) {
+    this.error = error;
+    this.errorAttributes = errorAttributes;
+  }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
@@ -134,6 +151,54 @@ public class GlobalExceptionHandler {
     return ErrorResponseDTO.notFound(e.getMessage());
   }
 
+  @ExceptionHandler(HandlerMethodValidationException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponseDTO handleHandlerMethodValidationException(
+          HandlerMethodValidationException e) {
+
+    List<ErrorFieldDTO> errors = e.getAllValidationResults()
+            .stream()
+            .map(error -> new ErrorFieldDTO(
+                    error.getMethodParameter().getParameterName(),
+                    error.getResolvableErrors()
+                            .getFirst()
+                            .getDefaultMessage()
+            ))
+            .toList();
+
+    return ErrorResponseDTO.withErrors(
+            "Validation failure",
+            errors
+    );
+  }
+
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponseDTO handleMethodArgumentTypeMismatchException(
+          MethodArgumentTypeMismatchException e) {
+
+    String parameterName = e.getName();
+
+    Object value = e.getValue();
+
+    String expectedType = e.getRequiredType() != null
+            ? e.getRequiredType().getSimpleName()
+            : "unknown";
+
+    ErrorFieldDTO error = new ErrorFieldDTO(
+            parameterName,
+            String.format(
+                    "Invalid value '%s'. Expected type: %s",
+                    value,
+                    expectedType
+            )
+    );
+
+    return ErrorResponseDTO.withErrors(
+            "Validation failure",
+            List.of(error)
+    );
+  }
   @ExceptionHandler(RuntimeException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ErrorResponseDTO handleUnexpected(RuntimeException e) {
