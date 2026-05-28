@@ -31,9 +31,12 @@ public class SecurityConfiguration {
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/auth/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/product/**").permitAll()
+                auth.requestMatchers(HttpMethod.POST, "/auth/**")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.GET, "/auth/**")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.GET, "/product/**")
+                    .permitAll()
                     .anyRequest()
                     .authenticated())
         // metodo para antes de fazer qqr verificação de ROLE, tem que pegar o token e registrar o
