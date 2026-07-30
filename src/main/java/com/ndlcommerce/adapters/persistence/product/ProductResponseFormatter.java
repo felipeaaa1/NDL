@@ -1,9 +1,9 @@
 package com.ndlcommerce.adapters.persistence.product;
 
-import com.ndlcommerce.config.PaginatedResult;
 import com.ndlcommerce.config.exception.BusinessException;
 import com.ndlcommerce.config.exception.EntityAlreadyExistsException;
 import com.ndlcommerce.useCase.interfaces.product.ProductPresenter;
+import com.ndlcommerce.useCase.model.SliceResult;
 import com.ndlcommerce.useCase.request.product.ProductResponseDTO;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -50,19 +50,16 @@ public class ProductResponseFormatter implements ProductPresenter {
   }
 
   @Override
-  public PaginatedResult<ProductResponseDTO> prepareListSuccessView(
-      PaginatedResult<ProductResponseDTO> list) {
-    if (list != null) {
-      list.getContent()
-          .forEach(
-              productResponseDTO -> {
-                LocalDateTime date = LocalDateTime.parse(productResponseDTO.getCreatedAt());
+  public SliceResult<ProductResponseDTO> prepareListSuccessView(
+      SliceResult<ProductResponseDTO> list) {
+    list.items()
+        .forEach(
+            productResponseDTO -> {
+              LocalDateTime date = LocalDateTime.parse(productResponseDTO.getCreatedAt());
 
-                productResponseDTO.setCreatedAt(
-                    date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
-              });
-      return list;
-    }
-    return new PaginatedResult<>(null, 0, 0, 0, 0, false, false);
+              productResponseDTO.setCreatedAt(
+                  date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+            });
+    return list;
   }
 }

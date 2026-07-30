@@ -1,6 +1,6 @@
 package com.ndlcommerce.useCase.interfaces.product;
 
-import com.ndlcommerce.config.PaginatedResult;
+import com.ndlcommerce.useCase.model.SliceResult;
 import com.ndlcommerce.useCase.request.product.ProductResponseDTO;
 
 public interface ProductPresenter {
@@ -9,6 +9,5 @@ public interface ProductPresenter {
 
   ProductResponseDTO prepareFailView(String error);
 
-  PaginatedResult<ProductResponseDTO> prepareListSuccessView(
-      PaginatedResult<ProductResponseDTO> list);
+  SliceResult<ProductResponseDTO> prepareListSuccessView(SliceResult<ProductResponseDTO> list);
 }

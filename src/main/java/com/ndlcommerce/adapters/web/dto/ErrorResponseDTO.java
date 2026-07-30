@@ -36,4 +36,8 @@ public record ErrorResponseDTO(int status, String message, List<ErrorFieldDTO> e
   public static ErrorResponseDTO notFound(String message) {
     return new ErrorResponseDTO(HttpStatus.NOT_FOUND.value(), message, List.of());
   }
+
+  public static ErrorResponseDTO internalServer(String message, List<ErrorFieldDTO> errors) {
+    return new ErrorResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), message, errors);
+  }
 }
