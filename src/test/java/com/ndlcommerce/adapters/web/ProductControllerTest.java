@@ -8,9 +8,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
-import com.ndlcommerce.config.PaginatedResult;
 import com.ndlcommerce.config.exception.GlobalExceptionHandler;
 import com.ndlcommerce.useCase.interfaces.product.ProductInputBoundary;
+import com.ndlcommerce.useCase.model.SliceResult;
 import com.ndlcommerce.useCase.request.product.ProductFilterDTO;
 import com.ndlcommerce.useCase.request.product.ProductResponseDTO;
 import java.util.List;
@@ -46,8 +46,7 @@ class ProductControllerTest {
   @Test
   void givenNoFilterParameters_whenSearchProducts_thenUseEmptyFilterAndReturnOk() throws Exception {
 
-    PaginatedResult<ProductResponseDTO> response =
-        new PaginatedResult<>(List.of(), 0, 20, 0, 0, true, true);
+    SliceResult<ProductResponseDTO> response = new SliceResult<>(List.of(), 0, 15, false, null);
     ArgumentCaptor<ProductFilterDTO> filterCaptor = ArgumentCaptor.forClass(ProductFilterDTO.class);
 
     when(productInputBoundary.list(any(ProductFilterDTO.class), eq(0), eq(20)))
@@ -69,8 +68,7 @@ class ProductControllerTest {
   @Test
   void givenBody_whenSearchProducts_thenPassFilterToUseCase() throws Exception {
 
-    PaginatedResult<ProductResponseDTO> response =
-        new PaginatedResult<>(List.of(), 0, 20, 0, 0, true, true);
+    SliceResult<ProductResponseDTO> response = new SliceResult<>(List.of(), 0, 15, false, null);
     UUID brandId = UUID.randomUUID();
     UUID categoryId = UUID.randomUUID();
     ArgumentCaptor<ProductFilterDTO> filterCaptor = ArgumentCaptor.forClass(ProductFilterDTO.class);

@@ -1,7 +1,7 @@
 package com.ndlcommerce.useCase.interfaces.product;
 
 import com.ndlcommerce.adapters.persistence.product.ProductDataMapper;
-import com.ndlcommerce.config.PaginatedResult;
+import com.ndlcommerce.useCase.model.SliceResult;
 import com.ndlcommerce.useCase.request.product.ProductDbRequestDTO;
 import com.ndlcommerce.useCase.request.product.ProductUpdateRequestDTO;
 import java.util.Optional;
@@ -11,8 +11,7 @@ public interface ProductRegisterDsGateway {
 
   boolean existsByName(String name);
 
-  PaginatedResult<ProductDataMapper> list(
-      ProductDbRequestDTO requestDTO, Integer page, Integer size);
+  SliceResult<ProductDataMapper> list(ProductDbRequestDTO requestDTO, Integer page, Integer size);
 
   ProductDataMapper save(ProductDbRequestDTO requestDTO);
 

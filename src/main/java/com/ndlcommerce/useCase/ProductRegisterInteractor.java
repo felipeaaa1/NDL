@@ -1,7 +1,6 @@
 package com.ndlcommerce.useCase;
 
 import com.ndlcommerce.adapters.persistence.product.ProductDataMapper;
-import com.ndlcommerce.config.PaginatedResult;
 import com.ndlcommerce.entity.factory.interfaces.ProductFactory;
 import com.ndlcommerce.entity.model.interfaces.Product;
 import com.ndlcommerce.useCase.interfaces.brand.BrandRegisterDsGateway;
@@ -9,6 +8,7 @@ import com.ndlcommerce.useCase.interfaces.category.CategoryRegisterDsGateway;
 import com.ndlcommerce.useCase.interfaces.product.ProductInputBoundary;
 import com.ndlcommerce.useCase.interfaces.product.ProductPresenter;
 import com.ndlcommerce.useCase.interfaces.product.ProductRegisterDsGateway;
+import com.ndlcommerce.useCase.model.SliceResult;
 import com.ndlcommerce.useCase.request.product.*;
 import java.util.Optional;
 import java.util.UUID;
@@ -71,7 +71,7 @@ public class ProductRegisterInteractor implements ProductInputBoundary {
   }
 
   @Override
-  public PaginatedResult<ProductResponseDTO> list(ProductFilterDTO filter, int page, int size) {
+  public SliceResult<ProductResponseDTO> list(ProductFilterDTO filter, int page, int size) {
     ProductDbRequestDTO productDbRequestDTO =
         new ProductDbRequestDTO(
             filter != null ? filter.getName() : null,
@@ -80,13 +80,10 @@ public class ProductRegisterInteractor implements ProductInputBoundary {
             filter != null ? filter.getCategory() : null,
             true);
 
-    PaginatedResult<ProductDataMapper> productDataMapperList =
-        productDsGateway.list(productDbRequestDTO, page, size);
+    SliceResult<ProductResponseDTO> productDataMapperList =
+        productDsGateway.list(productDbRequestDTO, page, size).map(this::mapperToDTO);
 
-    PaginatedResult<ProductResponseDTO> paginatedResultProductResponseDTO =
-        productDataMapperList == null ? null : productDataMapperList.map(this::mapperToDTO);
-
-    return productPresenter.prepareListSuccessView(paginatedResultProductResponseDTO);
+    return productPresenter.prepareListSuccessView(productDataMapperList);
   }
 
   private ProductResponseDTO mapperToDTO(ProductDataMapper productDataMapper) {

@@ -5,13 +5,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.ndlcommerce.adapters.persistence.product.ProductDataMapper;
-import com.ndlcommerce.config.PaginatedResult;
 import com.ndlcommerce.entity.factory.implementation.CommonProductFactoryImp;
 import com.ndlcommerce.entity.factory.interfaces.ProductFactory;
 import com.ndlcommerce.useCase.interfaces.brand.BrandRegisterDsGateway;
 import com.ndlcommerce.useCase.interfaces.category.CategoryRegisterDsGateway;
 import com.ndlcommerce.useCase.interfaces.product.ProductPresenter;
 import com.ndlcommerce.useCase.interfaces.product.ProductRegisterDsGateway;
+import com.ndlcommerce.useCase.model.SliceResult;
 import com.ndlcommerce.useCase.request.product.ProductDbRequestDTO;
 import com.ndlcommerce.useCase.request.product.ProductRequestDTO;
 import com.ndlcommerce.useCase.request.product.ProductResponseDTO;
@@ -172,10 +172,11 @@ class ProductRegisterInteractorTest {
 
   @Test
   void givenNullFilter_whenListProducts_thenUseEmptyFilterAndReturnListSuccess() {
-    PaginatedResult<ProductDataMapper> emptyProducts =
-        new PaginatedResult<>(List.of(), 0, 10, 0, 0, true, true);
-    PaginatedResult<ProductResponseDTO> emptyResponse =
-        new PaginatedResult<>(List.of(), 0, 10, 0, 0, true, true);
+    SliceResult<ProductDataMapper> emptyProducts = new SliceResult<>(List.of(), 0, 15, false, null);
+
+    SliceResult<ProductResponseDTO> emptyResponse =
+        new SliceResult<>(List.of(), 0, 15, false, null);
+
     ArgumentCaptor<ProductDbRequestDTO> filterCaptor =
         ArgumentCaptor.forClass(ProductDbRequestDTO.class);
 
@@ -183,7 +184,7 @@ class ProductRegisterInteractorTest {
         .thenReturn(emptyProducts);
     when(productPresenter.prepareListSuccessView(any())).thenReturn(emptyResponse);
 
-    PaginatedResult<ProductResponseDTO> response = interactor.list(null, 0, 10);
+    SliceResult<ProductResponseDTO> response = interactor.list(null, 0, 10);
 
     assertThat(response).isSameAs(emptyResponse);
     verify(productDsGateway).list(filterCaptor.capture(), eq(0), eq(10));

@@ -1,14 +1,18 @@
 package com.ndlcommerce.adapters.persistence.product;
 
 import com.ndlcommerce.adapters.persistence.user.UserDataMapper;
-import com.ndlcommerce.config.PaginatedResult;
 import com.ndlcommerce.config.SecurityFilter;
 import com.ndlcommerce.useCase.interfaces.product.ProductRegisterDsGateway;
+import com.ndlcommerce.useCase.model.SliceResult;
 import com.ndlcommerce.useCase.request.product.ProductDbRequestDTO;
 import com.ndlcommerce.useCase.request.product.ProductUpdateRequestDTO;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,41 +32,27 @@ public class JpaProduct implements ProductRegisterDsGateway {
   }
 
   @Override
-  public PaginatedResult<ProductDataMapper> list(
+  public SliceResult<ProductDataMapper> list(
       ProductDbRequestDTO requestDTO, Integer page, Integer size) {
 
-    ProductDataMapper dataMapper =
-        new ProductDataMapper(
-            requestDTO.getName(),
-            requestDTO.getDescription(),
+    Sort sort = Sort.by(Sort.Order.desc("createdAt")).and(Sort.by(Sort.Order.desc("id")));
+
+    Pageable pageable = PageRequest.of(page, size, sort);
+
+    String nameFilter = Objects.requireNonNullElse(requestDTO.getName(), "");
+
+    String descriptionFilter = Objects.requireNonNullElse(requestDTO.getDescription(), "");
+
+    Slice<ProductDataMapper> products =
+        repository.findProducts(
+            nameFilter,
+            descriptionFilter,
             requestDTO.getBrand(),
             requestDTO.getCategory(),
-            null);
+            pageable);
 
-    ExampleMatcher matcher =
-        ExampleMatcher.matching()
-            .withIgnoreCase()
-            .withIgnoreNullValues()
-            .withIgnorePaths("id", "createdBy", "createdAt", "updatedBy", "updatedAt")
-            .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
-
-    Example<ProductDataMapper> example = Example.of(dataMapper, matcher);
-
-    Pageable pageable = PageRequest.of(page, size);
-
-    Page<ProductDataMapper> categoryDataMapperPage = repository.findAll(example, pageable);
-
-    PaginatedResult<ProductDataMapper> resultCategoryDataMapper =
-        new PaginatedResult<>(
-            categoryDataMapperPage.getContent(),
-            categoryDataMapperPage.getNumber(),
-            categoryDataMapperPage.getSize(),
-            categoryDataMapperPage.getTotalElements(),
-            categoryDataMapperPage.getTotalPages(),
-            categoryDataMapperPage.isFirst(),
-            categoryDataMapperPage.isLast());
-
-    return resultCategoryDataMapper;
+    return SliceResult.of(
+        products.getContent(), products.getNumber(), products.getSize(), products.hasNext());
   }
 
   @Override

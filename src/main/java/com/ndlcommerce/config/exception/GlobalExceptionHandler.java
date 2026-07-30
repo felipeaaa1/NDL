@@ -7,7 +7,9 @@ import com.ndlcommerce.adapters.web.dto.ErrorResponseDTO;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.*;
@@ -21,6 +23,7 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.View;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -183,18 +186,25 @@ public class GlobalExceptionHandler {
     return ErrorResponseDTO.withErrors("Validation failure", List.of(error));
   }
 
+  @ExceptionHandler(DataAccessException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public ErrorResponseDTO handleDataAccessException(DataAccessException e) {
+    log.error(String.valueOf(e));
+    ErrorFieldDTO error =
+        new ErrorFieldDTO(
+            "Erro nosso",
+            "Na real isso não era nem pra um usuário estar vendo, eu sinto mto vc passar por isso :/");
+    return ErrorResponseDTO.internalServer(
+        "Erro ao tratar requisição, favor contate o suporte", List.of(error));
+  }
+
   @ExceptionHandler(RuntimeException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ErrorResponseDTO handleUnexpected(RuntimeException e) {
-    System.err.println("Unhandled exception: " + e.getMessage());
+    log.error("Erro inesperado durante a requisição", e);
     return new ErrorResponseDTO(
         HttpStatus.INTERNAL_SERVER_ERROR.value(),
-        "🎉 Parabeeens🎉 você achou um erro não tratado! Por gentileza entre em contato com o suporte e informe a mensagem e causa do erro: "
-            + e.getMessage()
-            + " | causa: "
-            + e.getCause()
-            + "localização: "
-            + e.getLocalizedMessage(),
+        "🎉 Parabeeens🎉 você achou um erro não tratado! Por gentileza entre em contato com o suporte e informe a mensagem e causa do erro",
         List.of());
   }
 }
