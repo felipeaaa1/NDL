@@ -198,6 +198,36 @@ class ProductRegisterInteractorTest {
   }
 
   @Test
+  void givenProducts_whenList_thenMapItemsAndCallPresenter() {
+    UUID firstId = UUID.randomUUID();
+    UUID secondId = UUID.randomUUID();
+
+    ProductDataMapper first =
+        productDataMapper(
+            firstId, "Notebook", "Notebook profissional", LocalDateTime.of(2026, 5, 4, 20, 30));
+    ProductDataMapper second =
+        productDataMapper(secondId, "Mouse", "Mouse sem fio", LocalDateTime.of(2026, 5, 3, 19, 20));
+
+    SliceResult<ProductDataMapper> gatewayResult =
+        SliceResult.of(List.of(first, second), 1, 2, true);
+
+    when(productDsGateway.list(any(ProductDbRequestDTO.class), eq(1), eq(2)))
+        .thenReturn(gatewayResult);
+    when(productPresenter.prepareListSuccessView(any()))
+        .thenAnswer(invocation -> invocation.getArgument(0));
+
+    SliceResult<ProductResponseDTO> result = interactor.list(null, 1, 2);
+
+    assertThat(result.items())
+        .extracting(ProductResponseDTO::getUuid)
+        .containsExactly(firstId, secondId);
+    assertThat(result.items())
+        .extracting(ProductResponseDTO::getName)
+        .containsExactly("Notebook", "Mouse");
+    verify(productPresenter).prepareListSuccessView(result);
+  }
+
+  @Test
   void givenUnknownBrandOnCreate_thenPrepareBrandNotFoundFailView() {
     UUID brandId = UUID.randomUUID();
 
