@@ -1,10 +1,12 @@
 package com.ndlcommerce.adapters.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
@@ -128,5 +130,41 @@ class ProductControllerTest {
             result ->
                 assertThat(result.getResolvedException())
                     .isInstanceOf(HandlerMethodValidationException.class));
+  }
+
+  @Test
+  void givenProductsWithNextPage_whenList_thenSerializeInfiniteScrollContract() throws Exception {
+    ProductResponseDTO product =
+        new ProductResponseDTO(
+            UUID.randomUUID(), "Notebook", "Notebook profissional", "04/05/2026 20:30");
+    SliceResult<ProductResponseDTO> response = SliceResult.of(List.of(product), 0, 15, true);
+    when(productInputBoundary.list(any(ProductFilterDTO.class), eq(0), eq(15)))
+        .thenReturn(response);
+
+    mockMvc
+        .perform(get("/product").param("page", "0").param("size", "15"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.items.length()").value(1))
+        .andExpect(jsonPath("$.items[0].name").value("Notebook"))
+        .andExpect(jsonPath("$.page").value(0))
+        .andExpect(jsonPath("$.size").value(15))
+        .andExpect(jsonPath("$.hasNext").value(true))
+        .andExpect(jsonPath("$.nextPage").value(1));
+  }
+
+  @Test
+  void givenLastPage_whenList_thenSerializeNullNextPage() throws Exception {
+    SliceResult<ProductResponseDTO> response = SliceResult.of(List.of(), 9, 15, false);
+    when(productInputBoundary.list(any(ProductFilterDTO.class), eq(9), eq(15)))
+        .thenReturn(response);
+
+    mockMvc
+        .perform(get("/product").param("page", "9").param("size", "15"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.items").isArray())
+        .andExpect(jsonPath("$.page").value(9))
+        .andExpect(jsonPath("$.size").value(15))
+        .andExpect(jsonPath("$.hasNext").value(false))
+        .andExpect(jsonPath("$.nextPage").value(nullValue()));
   }
 }
