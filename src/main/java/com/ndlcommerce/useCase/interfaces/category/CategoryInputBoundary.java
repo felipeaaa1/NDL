@@ -1,6 +1,6 @@
 package com.ndlcommerce.useCase.interfaces.category;
 
-import com.ndlcommerce.config.PaginatedResult;
+import com.ndlcommerce.useCase.model.PaginatedResult;
 import com.ndlcommerce.useCase.request.category.CategoryRequestDTO;
 import com.ndlcommerce.useCase.request.category.CategoryResponseDTO;
 import java.util.UUID;

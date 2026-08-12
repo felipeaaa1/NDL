@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.ndlcommerce.adapters.persistence.brand.BrandResponseFormatter;
-import com.ndlcommerce.config.PaginatedResult;
 import com.ndlcommerce.config.exception.EntityAlreadyExistsException;
+import com.ndlcommerce.useCase.model.PaginatedResult;
 import com.ndlcommerce.useCase.request.brand.BrandResponseDTO;
 import java.util.List;
 import java.util.UUID;
