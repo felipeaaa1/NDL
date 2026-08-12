@@ -1,12 +1,13 @@
 package com.ndlcommerce.adapters.persistence.brand;
 
-import com.ndlcommerce.config.PaginatedResult;
 import com.ndlcommerce.config.exception.BusinessException;
 import com.ndlcommerce.config.exception.EntityAlreadyExistsException;
 import com.ndlcommerce.useCase.interfaces.brand.BrandPresenter;
+import com.ndlcommerce.useCase.model.PaginatedResult;
 import com.ndlcommerce.useCase.request.brand.BrandResponseDTO;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -57,6 +58,6 @@ public class BrandResponseFormatter implements BrandPresenter {
       return list;
     }
 
-    return new PaginatedResult<>(null, 0, 0, 0, 0, false, false);
+    return new PaginatedResult<>(List.of(), 0, 0, 0, 0, true, true);
   }
 }

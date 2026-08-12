@@ -1,6 +1,6 @@
 package com.ndlcommerce.useCase.interfaces.brand;
 
-import com.ndlcommerce.config.PaginatedResult;
+import com.ndlcommerce.useCase.model.PaginatedResult;
 import com.ndlcommerce.useCase.request.brand.BrandResponseDTO;
 
 public interface BrandPresenter {
