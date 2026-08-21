@@ -1,8 +1,10 @@
 package com.ndlcommerce.adapters;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.ndlcommerce.adapters.persistence.product.ProductResponseFormatter;
+import com.ndlcommerce.config.exception.BusinessException;
 import com.ndlcommerce.useCase.model.SliceResult;
 import com.ndlcommerce.useCase.request.product.ProductResponseDTO;
 import java.util.List;
@@ -38,5 +40,12 @@ class ProductResponseFormatterTest {
     assertThat(result.items())
         .extracting(ProductResponseDTO::getCreatedAt)
         .containsExactly("04/05/2026 20:30", "03/05/2026 19:20");
+  }
+
+  @Test
+  void givenInvalidSkuError_whenPrepareFailView_thenThrowBusinessException() {
+    assertThatThrownBy(() -> formatter.prepareFailView("SkuIsNotValid"))
+        .isInstanceOf(BusinessException.class)
+        .hasMessage("Um ou mais SKUs fornecidos são inválidos");
   }
 }

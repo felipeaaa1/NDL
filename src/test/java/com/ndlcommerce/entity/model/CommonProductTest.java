@@ -3,13 +3,18 @@ package com.ndlcommerce.entity.model;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ndlcommerce.entity.model.implementation.CommonProduct;
+import com.ndlcommerce.entity.model.implementation.CommonProductSku;
 import com.ndlcommerce.entity.model.interfaces.Product;
+import java.math.BigDecimal;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class CommonProductTest {
 
   @Test
   void givenShortName_whenNameIsNotValid_thenIsFalse() {
+
+    new CommonProductSku("COR-AZ", Map.of("cor", "azul"), new BigDecimal("100.00"), 1, true);
     Product product = new CommonProduct("A", "Descrição válida");
 
     assertThat(product.nameIsValid()).isFalse();
@@ -17,6 +22,8 @@ class CommonProductTest {
 
   @Test
   void givenNullName_whenNameIsNotValid_thenIsFalse() {
+
+    new CommonProductSku("COR-AZ", Map.of("cor", "azul"), new BigDecimal("100.00"), 1, true);
     Product product = new CommonProduct(null, "Descrição válida");
 
     assertThat(product.nameIsValid()).isFalse();
@@ -24,6 +31,7 @@ class CommonProductTest {
 
   @Test
   void givenHugeName_whenNameIsNotValid_thenIsFalse() {
+
     Product product =
         new CommonProduct(
             """
@@ -44,6 +52,7 @@ class CommonProductTest {
 
   @Test
   void givenNullDescription_whenDescriptionIsNotValid_thenIsFalse() {
+
     Product product = new CommonProduct("Produto válido", null);
 
     assertThat(product.descriptionIsValid()).isFalse();
@@ -51,6 +60,7 @@ class CommonProductTest {
 
   @Test
   void givenBlankDescription_whenDescriptionIsNotValid_thenIsFalse() {
+
     Product product = new CommonProduct("Produto válido", "   ");
 
     assertThat(product.descriptionIsValid()).isFalse();
@@ -58,6 +68,7 @@ class CommonProductTest {
 
   @Test
   void givenHugeDescription_whenDescriptionIsNotValid_thenIsFalse() {
+
     Product product =
         new CommonProduct(
             "Produto válido",
@@ -121,6 +132,7 @@ class CommonProductTest {
 
   @Test
   void givenValidName_whenNameIsValid_thenIsTrue() {
+
     Product product = new CommonProduct("Mouse Óptico", "Perfeito para trabalho");
 
     assertThat(product.nameIsValid()).isTrue();
@@ -128,6 +140,7 @@ class CommonProductTest {
 
   @Test
   void givenValidProduct_whenNameAndDescriptionAreValid_thenIsTrue() {
+
     Product product = new CommonProduct("Teclado Gamer", "Switch red, RGB, silencioso");
 
     assertThat(product.nameIsValid()).isTrue();
