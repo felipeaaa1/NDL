@@ -26,6 +26,8 @@ public class ProductResponseFormatter implements ProductPresenter {
           new NoSuchElementException("UUID da Marca fornecida não foi encontrado"),
           "CategoryNotFound",
           new NoSuchElementException("UUID da Categoria fornecida não foi encontrado"),
+          "SkuIsNotValid",
+          new NoSuchElementException("Código SKU fornecido é inválido"),
           "NotFound",
           new NoSuchElementException());
 

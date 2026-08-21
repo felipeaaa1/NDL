@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import com.ndlcommerce.adapters.persistence.product.ProductDataMapper;
 import com.ndlcommerce.entity.factory.implementation.CommonProductFactoryImp;
 import com.ndlcommerce.entity.factory.interfaces.ProductFactory;
+import com.ndlcommerce.entity.factory.interfaces.ProductSkuFactory;
 import com.ndlcommerce.useCase.interfaces.brand.BrandRegisterDsGateway;
 import com.ndlcommerce.useCase.interfaces.category.CategoryRegisterDsGateway;
 import com.ndlcommerce.useCase.interfaces.product.ProductPresenter;
@@ -31,6 +32,7 @@ class ProductRegisterInteractorTest {
   private ProductFactory productFactory;
   private BrandRegisterDsGateway brandRegisterDsGateway;
   private CategoryRegisterDsGateway categoryRegisterDsGateway;
+  private ProductSkuFactory productSkuFactory;
   private ProductRegisterInteractor interactor;
 
   @BeforeEach
@@ -39,6 +41,7 @@ class ProductRegisterInteractorTest {
     this.productPresenter = mock(ProductPresenter.class);
     this.productFactory = new CommonProductFactoryImp();
     this.brandRegisterDsGateway = mock(BrandRegisterDsGateway.class);
+    this.productSkuFactory = mock(ProductSkuFactory.class);
     this.categoryRegisterDsGateway = mock(CategoryRegisterDsGateway.class);
 
     this.interactor =
@@ -46,6 +49,7 @@ class ProductRegisterInteractorTest {
             productDsGateway,
             productPresenter,
             productFactory,
+            productSkuFactory,
             brandRegisterDsGateway,
             categoryRegisterDsGateway);
   }
@@ -172,7 +176,8 @@ class ProductRegisterInteractorTest {
 
   @Test
   void givenNullFilter_whenListProducts_thenUseEmptyFilterAndReturnListSuccess() {
-    SliceResult<ProductDataMapper> emptyProducts = new SliceResult<>(List.of(), 0, 15, false, null);
+    SliceResult<ProductResponseDTO> emptyProducts =
+        new SliceResult<>(List.of(), 0, 15, false, null);
 
     SliceResult<ProductResponseDTO> emptyResponse =
         new SliceResult<>(List.of(), 0, 15, false, null);
@@ -202,13 +207,17 @@ class ProductRegisterInteractorTest {
     UUID firstId = UUID.randomUUID();
     UUID secondId = UUID.randomUUID();
 
-    ProductDataMapper first =
-        productDataMapper(
-            firstId, "Notebook", "Notebook profissional", LocalDateTime.of(2026, 5, 4, 20, 30));
-    ProductDataMapper second =
-        productDataMapper(secondId, "Mouse", "Mouse sem fio", LocalDateTime.of(2026, 5, 3, 19, 20));
+    ProductResponseDTO first =
+        new ProductResponseDTO(
+            firstId,
+            "Notebook",
+            "Notebook profissional",
+            LocalDateTime.of(2026, 5, 4, 20, 30).toString());
+    ProductResponseDTO second =
+        new ProductResponseDTO(
+            secondId, "Mouse", "Mouse sem fio", LocalDateTime.of(2026, 5, 3, 19, 20).toString());
 
-    SliceResult<ProductDataMapper> gatewayResult =
+    SliceResult<ProductResponseDTO> gatewayResult =
         SliceResult.of(List.of(first, second), 1, 2, true);
 
     when(productDsGateway.list(any(ProductDbRequestDTO.class), eq(1), eq(2)))
