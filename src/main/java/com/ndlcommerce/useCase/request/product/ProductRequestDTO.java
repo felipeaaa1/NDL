@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 import java.util.UUID;
 
 public class ProductRequestDTO {
@@ -17,7 +18,7 @@ public class ProductRequestDTO {
 
   @NotNull(message = "productSkuRequestDTO é um campo obrigatório")
   @Valid
-  private ProductSkuRequestDTO productSkuRequestDTO;
+  private List<ProductSkuRequestDTO> productSkuRequestDTO;
 
   @Schema(example = "Notebook com 16GB RAM e SSD 512GB")
   @NotBlank(message = "Descrição deve ter no mínimo 5 e no máximo 500 caracteres")
@@ -55,7 +56,7 @@ public class ProductRequestDTO {
     return category;
   }
 
-  public ProductSkuRequestDTO getProductSkuRequestDTO() {
+  public List<ProductSkuRequestDTO> getProductSkuRequestDTO() {
     return productSkuRequestDTO;
   }
 }

@@ -4,22 +4,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.ndlcommerce.adapters.persistence.category.CategoryDataMapper;
 import com.ndlcommerce.adapters.persistence.product.ProductDataMapper;
 import com.ndlcommerce.entity.factory.implementation.CommonProductFactoryImp;
 import com.ndlcommerce.entity.factory.interfaces.ProductFactory;
 import com.ndlcommerce.entity.factory.interfaces.ProductSkuFactory;
+import com.ndlcommerce.entity.model.implementation.CommonProductSku;
+import com.ndlcommerce.entity.model.interfaces.ProductSku;
 import com.ndlcommerce.useCase.interfaces.brand.BrandRegisterDsGateway;
 import com.ndlcommerce.useCase.interfaces.category.CategoryRegisterDsGateway;
 import com.ndlcommerce.useCase.interfaces.product.ProductPresenter;
 import com.ndlcommerce.useCase.interfaces.product.ProductRegisterDsGateway;
 import com.ndlcommerce.useCase.model.SliceResult;
+import com.ndlcommerce.useCase.request.brand.BrandGatewayResponseDTO;
 import com.ndlcommerce.useCase.request.product.ProductDbRequestDTO;
 import com.ndlcommerce.useCase.request.product.ProductRequestDTO;
 import com.ndlcommerce.useCase.request.product.ProductResponseDTO;
 import com.ndlcommerce.useCase.request.product.ProductUpdateRequestDTO;
+import com.ndlcommerce.useCase.request.productSku.ProductSkuRequestDTO;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -252,6 +260,89 @@ class ProductRegisterInteractorTest {
     verify(productPresenter).prepareFailView("BrandNotFound");
     verify(productDsGateway, never()).save(any());
     verifyNoMoreInteractions(productPresenter);
+  }
+
+  @Test
+  void givenInvalidSku_whenCreate_thenPrepareInvalidSkuFailViewWithoutQueryingDatabase() {
+    ProductRequestDTO request = validCreateRequest(List.of(skuRequest("preto")));
+    ProductSku invalidSku = mock(ProductSku.class);
+    ProductResponseDTO failResponse = new ProductResponseDTO();
+
+    when(productSkuFactory.create(anyString(), anyMap(), any(), anyInt(), eq(true)))
+        .thenReturn(invalidSku);
+    when(invalidSku.isValid()).thenReturn(false);
+    when(productPresenter.prepareFailView("SkuIsNotValid")).thenReturn(failResponse);
+
+    ProductResponseDTO response = interactor.create(request);
+
+    assertThat(response).isSameAs(failResponse);
+    verify(productPresenter).prepareFailView("SkuIsNotValid");
+    verify(productDsGateway, never()).skuCodesExist(anySet());
+    verify(productDsGateway, never()).save(any());
+  }
+
+  @Test
+  void givenDuplicatedSkuCodesInRequest_whenCreate_thenFailWithoutQueryingDatabase() {
+    ProductRequestDTO request =
+        validCreateRequest(List.of(skuRequest("preto"), skuRequest("azul")));
+    ProductSku firstSku = validSku("TEN-COR-PRE");
+    ProductSku secondSku = validSku("TEN-COR-PRE");
+    ProductResponseDTO failResponse = new ProductResponseDTO();
+
+    when(productSkuFactory.create(anyString(), anyMap(), any(), anyInt(), eq(true)))
+        .thenReturn(firstSku, secondSku);
+    when(productPresenter.prepareFailView("SkuCodeDuplicated")).thenReturn(failResponse);
+
+    ProductResponseDTO response = interactor.create(request);
+
+    assertThat(response).isSameAs(failResponse);
+    verify(productPresenter).prepareFailView("SkuCodeDuplicated");
+    verify(productDsGateway, never()).skuCodesExist(anySet());
+    verify(productDsGateway, never()).save(any());
+  }
+
+  @Test
+  void givenSkuCodeAlreadyStored_whenCreate_thenQueryCodesOnceAndPrepareConflictView() {
+    ProductRequestDTO request = validCreateRequest(List.of(skuRequest("preto")));
+    ProductSku sku = validSku("TEN-COR-PRE");
+    ProductResponseDTO failResponse = new ProductResponseDTO();
+
+    when(productSkuFactory.create(anyString(), anyMap(), any(), anyInt(), eq(true)))
+        .thenReturn(sku);
+    when(productDsGateway.skuCodesExist(Set.of("TEN-COR-PRE"))).thenReturn(true);
+    when(productPresenter.prepareFailView("SkuAlreadyExists")).thenReturn(failResponse);
+
+    ProductResponseDTO response = interactor.create(request);
+
+    assertThat(response).isSameAs(failResponse);
+    verify(productDsGateway, times(1)).skuCodesExist(Set.of("TEN-COR-PRE"));
+    verify(productPresenter).prepareFailView("SkuAlreadyExists");
+    verify(productDsGateway, never()).save(any());
+  }
+
+  private ProductRequestDTO validCreateRequest(List<ProductSkuRequestDTO> skuRequests) {
+    UUID brandId = UUID.randomUUID();
+    UUID categoryId = UUID.randomUUID();
+    ProductRequestDTO request = mock(ProductRequestDTO.class);
+
+    when(request.getName()).thenReturn("Tênis Corre 4");
+    when(request.getDescription()).thenReturn("Tênis para corrida");
+    when(request.getBrand()).thenReturn(brandId);
+    when(request.getCategory()).thenReturn(categoryId);
+    when(request.getProductSkuRequestDTO()).thenReturn(skuRequests);
+    when(brandRegisterDsGateway.getById(brandId))
+        .thenReturn(Optional.of(mock(BrandGatewayResponseDTO.class)));
+    when(categoryRegisterDsGateway.getById(categoryId))
+        .thenReturn(Optional.of(mock(CategoryDataMapper.class)));
+    return request;
+  }
+
+  private ProductSkuRequestDTO skuRequest(String color) {
+    return new ProductSkuRequestDTO(Map.of("cor", color), new BigDecimal("499.90"), 8);
+  }
+
+  private ProductSku validSku(String skuCode) {
+    return new CommonProductSku(skuCode, Map.of("cor", "preto"), new BigDecimal("499.90"), 8, true);
   }
 
   private ProductDataMapper productDataMapper(

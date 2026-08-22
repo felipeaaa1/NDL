@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -103,17 +104,19 @@ class JpaProductTest {
             8,
             true);
     ProductDbRequestDTO request =
-        new ProductDbRequestDTO("Tênis Corre 4", "Tênis para corrida", null, null, sku, true);
+        new ProductDbRequestDTO(
+            "Tênis Corre 4", "Tênis para corrida", null, null, List.of(sku), true);
     when(securityFilter.obterUsuarioLogado()).thenReturn(loggedUser);
     when(loggedUser.getId()).thenReturn(userId);
     when(repository.save(any(ProductDataMapper.class))).thenReturn(savedProduct);
-    ArgumentCaptor<ProductSkuDataMapper> skuCaptor =
-        ArgumentCaptor.forClass(ProductSkuDataMapper.class);
 
     ProductResponseDTO result = adapter.save(request);
 
-    verify(productSkuRepository).save(skuCaptor.capture());
-    ProductSkuDataMapper persistedSku = skuCaptor.getValue();
+    @SuppressWarnings("unchecked")
+    ArgumentCaptor<List<ProductSkuDataMapper>> skuListCaptor = ArgumentCaptor.forClass(List.class);
+    verify(productSkuRepository).saveAll(skuListCaptor.capture());
+    assertThat(skuListCaptor.getValue()).hasSize(1);
+    ProductSkuDataMapper persistedSku = skuListCaptor.getValue().getFirst();
     assertThat(persistedSku.getProductId()).isEqualTo(productId);
     assertThat(persistedSku.getAttributes())
         .containsEntry("cor", "bege")
@@ -124,5 +127,16 @@ class JpaProductTest {
     assertThat(persistedSku.getActive()).isTrue();
     assertThat(persistedSku.getCreatedBy()).isEqualTo(userId);
     assertThat(result.getUuid()).isEqualTo(productId);
+  }
+
+  @Test
+  void givenSkuCodes_whenCheckingExistence_thenDelegateCollectionToRepositoryOnce() {
+    Set<String> skuCodes = Set.of("TEN-COR-PRE", "TEN-COR-AZU");
+    when(productSkuRepository.existsBySkuCodeIn(skuCodes)).thenReturn(true);
+
+    boolean exists = adapter.skuCodesExist(skuCodes);
+
+    assertThat(exists).isTrue();
+    verify(productSkuRepository).existsBySkuCodeIn(skuCodes);
   }
 }

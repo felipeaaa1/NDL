@@ -1,6 +1,7 @@
 package com.ndlcommerce.useCase.request.product;
 
 import com.ndlcommerce.entity.model.interfaces.ProductSku;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.Getter;
@@ -11,7 +12,7 @@ public class ProductDbRequestDTO {
   @Getter private String description;
   @Getter private UUID brand;
   @Getter private UUID category;
-  @Getter private ProductSku productSku;
+  @Getter private List<ProductSku> productSku;
   @Getter private boolean active;
 
   public ProductDbRequestDTO(
@@ -19,7 +20,7 @@ public class ProductDbRequestDTO {
       String description,
       UUID brand,
       UUID category,
-      ProductSku productSku,
+      List<ProductSku> productSku,
       boolean active) {
     this.name = name;
     this.description = description;

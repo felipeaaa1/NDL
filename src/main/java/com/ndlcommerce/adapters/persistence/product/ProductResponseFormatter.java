@@ -20,14 +20,19 @@ public class ProductResponseFormatter implements ProductPresenter {
           "DescriptionNotValid",
           new BusinessException(
               "o Descrição não é válida, Descrição deve ter no mínimo 5 e no max 500 letras"),
+          "SkuCodeDuplicated",
+          new BusinessException(
+              "A lista de SKU contem SKUs duplicados, por favor, verifique a lista de SKU"),
           "ExistByName",
           new EntityAlreadyExistsException("Produto Já cadastrado"),
+          "SkuAlreadyExists",
+          new EntityAlreadyExistsException("SKU fornecida Já cadastrado"),
           "BrandNotFound",
           new NoSuchElementException("UUID da Marca fornecida não foi encontrado"),
           "CategoryNotFound",
           new NoSuchElementException("UUID da Categoria fornecida não foi encontrado"),
           "SkuIsNotValid",
-          new NoSuchElementException("Código SKU fornecido é inválido"),
+          new BusinessException("Um ou mais SKUs fornecidos são inválidos"),
           "NotFound",
           new NoSuchElementException());
 

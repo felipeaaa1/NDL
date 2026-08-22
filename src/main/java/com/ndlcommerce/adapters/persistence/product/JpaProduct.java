@@ -10,9 +10,7 @@ import com.ndlcommerce.useCase.model.SliceResult;
 import com.ndlcommerce.useCase.request.product.ProductDbRequestDTO;
 import com.ndlcommerce.useCase.request.product.ProductResponseDTO;
 import com.ndlcommerce.useCase.request.product.ProductUpdateRequestDTO;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -110,6 +108,11 @@ public class JpaProduct implements ProductRegisterDsGateway {
     repository.save(ProductDataMapper);
   }
 
+  @Override
+  public boolean skuCodesExist(Set<String> uniqueSkuCodes) {
+    return productSkuRepository.existsBySkuCodeIn(uniqueSkuCodes);
+  }
+
   private ProductDataMapper persistEntity(ProductDbRequestDTO requestDTO) {
 
     UserDataMapper userLogado = securityFilter.obterUsuarioLogado();
@@ -123,19 +126,26 @@ public class JpaProduct implements ProductRegisterDsGateway {
             userLogado.getId());
 
     ProductDataMapper savedProduct = repository.save(entity);
-    ProductSku productSku = requestDTO.getProductSku();
+    List<ProductSku> productSkuList = requestDTO.getProductSku();
 
-    ProductSkuDataMapper skuEntity =
-        new ProductSkuDataMapper(
-            savedProduct.getId(),
-            productSku.getAttributes(),
-            productSku.getPrice(),
-            productSku.getStock(),
-            productSku.getSkuCode(),
-            productSku.isActive(),
-            userLogado.getId());
+    List<ProductSkuDataMapper> productSkuDataMapperList =
+        productSkuList.stream()
+            .map(
+                productSku -> {
+                  ProductSkuDataMapper skuEntity =
+                      new ProductSkuDataMapper(
+                          savedProduct.getId(),
+                          productSku.getAttributes(),
+                          productSku.getPrice(),
+                          productSku.getStock(),
+                          productSku.getSkuCode(),
+                          productSku.isActive(),
+                          userLogado.getId());
+                  return skuEntity;
+                })
+            .toList();
 
-    productSkuRepository.save(skuEntity);
+    productSkuRepository.saveAll(productSkuDataMapperList);
     repository.flush();
     return savedProduct;
   }

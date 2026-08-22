@@ -12,8 +12,8 @@ import com.ndlcommerce.useCase.interfaces.product.ProductPresenter;
 import com.ndlcommerce.useCase.interfaces.product.ProductRegisterDsGateway;
 import com.ndlcommerce.useCase.model.SliceResult;
 import com.ndlcommerce.useCase.request.product.*;
-import com.ndlcommerce.useCase.request.productSku.ProductSkuRequestDTO;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ProductRegisterInteractor implements ProductInputBoundary {
 
@@ -47,18 +47,33 @@ public class ProductRegisterInteractor implements ProductInputBoundary {
     if (categoryRegisterDsGateway.getById(requestDTO.getCategory()).isEmpty()) {
       return productPresenter.prepareFailView("CategoryNotFound");
     }
-    ProductSkuRequestDTO productSkuRequestDTO = requestDTO.getProductSkuRequestDTO();
-    ProductSku productSku =
-        productSkuFactory.create(
-            requestDTO.getName(),
-            productSkuRequestDTO.attributes(),
-            productSkuRequestDTO.price(),
-            productSkuRequestDTO.stock(),
-            true);
 
-    if (!productSku.isValid()) {
+    List<ProductSku> productSkuList =
+        requestDTO.getProductSkuRequestDTO().stream()
+            .map(
+                productSkuRequestDTO ->
+                    productSkuFactory.create(
+                        requestDTO.getName(),
+                        productSkuRequestDTO.attributes(),
+                        productSkuRequestDTO.price(),
+                        productSkuRequestDTO.stock(),
+                        true))
+            .toList();
+
+    if (productSkuList.stream().anyMatch(productSku -> !productSku.isValid())) {
       return productPresenter.prepareFailView("SkuIsNotValid");
     }
+
+    Set<String> uniqueSkuCodes =
+        productSkuList.stream().map(ProductSku::getSkuCode).collect(Collectors.toSet());
+    if (productSkuList.size() != uniqueSkuCodes.size()) {
+      return productPresenter.prepareFailView("SkuCodeDuplicated");
+    }
+
+    if (productDsGateway.skuCodesExist(uniqueSkuCodes)) {
+      return productPresenter.prepareFailView("SkuAlreadyExists");
+    }
+
     Product product = productFactory.create(requestDTO.getName(), requestDTO.getDescription());
 
     if (!product.nameIsValid()) {
@@ -75,7 +90,7 @@ public class ProductRegisterInteractor implements ProductInputBoundary {
             product.getDescription(),
             requestDTO.getBrand(),
             requestDTO.getCategory(),
-            productSku,
+            productSkuList,
             true);
 
     ProductResponseDTO save = productDsGateway.save(dbRequest);
