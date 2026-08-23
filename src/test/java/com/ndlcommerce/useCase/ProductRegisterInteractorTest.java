@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.ndlcommerce.adapters.persistence.category.CategoryDataMapper;
-import com.ndlcommerce.adapters.persistence.product.ProductDataMapper;
 import com.ndlcommerce.entity.factory.implementation.CommonProductFactoryImp;
 import com.ndlcommerce.entity.factory.interfaces.ProductFactory;
 import com.ndlcommerce.entity.factory.interfaces.ProductSkuFactory;
@@ -24,11 +23,7 @@ import com.ndlcommerce.useCase.request.product.ProductUpdateRequestDTO;
 import com.ndlcommerce.useCase.request.productSku.ProductSkuRequestDTO;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -80,8 +75,8 @@ class ProductRegisterInteractorTest {
   void givenExistingProductId_whenGetById_thenReturnMappedProductResponse() {
     UUID productId = UUID.randomUUID();
     LocalDateTime createdAt = LocalDateTime.of(2026, 5, 4, 20, 30, 0);
-    ProductDataMapper product =
-        productDataMapper(productId, "Notebook Pro", "16GB RAM SSD", createdAt);
+    ProductResponseDTO product =
+        new ProductResponseDTO(productId, "Notebook Pro", "16GB RAM SSD", createdAt.toString());
 
     when(productDsGateway.findById(productId)).thenReturn(Optional.of(product));
     when(productPresenter.prepareSuccessView(any(ProductResponseDTO.class)))
@@ -100,8 +95,9 @@ class ProductRegisterInteractorTest {
     UUID productId = UUID.randomUUID();
     UUID brandId = UUID.randomUUID();
 
-    ProductDataMapper currentProduct =
-        productDataMapper(productId, "Mouse", "Descrição atual", LocalDateTime.now());
+    ProductResponseDTO currentProduct =
+        new ProductResponseDTO(
+            productId, "Mouse", "Descrição atual", LocalDateTime.now().toString());
 
     ProductUpdateRequestDTO requestDTO = mock(ProductUpdateRequestDTO.class);
     ProductResponseDTO failResponse = new ProductResponseDTO();
@@ -118,18 +114,18 @@ class ProductRegisterInteractorTest {
 
     assertThat(response).isSameAs(failResponse);
     verify(productPresenter).prepareFailView("BrandNotFound");
-    verify(productDsGateway, never())
-        .update(any(ProductDataMapper.class), any(ProductUpdateRequestDTO.class));
+    verify(productDsGateway, never()).update(any(UUID.class), any(ProductUpdateRequestDTO.class));
   }
 
   @Test
   void givenValidUpdateRequest_whenUpdateProduct_thenPersistAndReturnUpdatedProduct() {
     UUID productId = UUID.randomUUID();
     LocalDateTime createdAt = LocalDateTime.of(2026, 5, 4, 21, 0, 0);
-    ProductDataMapper currentProduct =
-        productDataMapper(productId, "Notebook", "Descrição inicial", createdAt);
-    ProductDataMapper updatedProduct =
-        productDataMapper(productId, "Notebook Gamer", "Descrição atualizada", createdAt);
+    ProductResponseDTO currentProduct =
+        new ProductResponseDTO(productId, "Notebook", "Descrição inicial", createdAt.toString());
+    ProductResponseDTO updatedProduct =
+        new ProductResponseDTO(
+            productId, "Notebook Gamer", "Descrição atualizada", createdAt.toString());
     ProductUpdateRequestDTO requestDTO = mock(ProductUpdateRequestDTO.class);
 
     when(productDsGateway.findById(productId)).thenReturn(Optional.of(currentProduct));
@@ -138,7 +134,7 @@ class ProductRegisterInteractorTest {
     when(requestDTO.getName()).thenReturn("Notebook Gamer");
     when(requestDTO.getDescription()).thenReturn("Descrição atualizada");
     when(productDsGateway.existsByNameAndIdNot("Notebook Gamer", productId)).thenReturn(false);
-    when(productDsGateway.update(currentProduct, requestDTO)).thenReturn(updatedProduct);
+    when(productDsGateway.update(currentProduct.getUuid(), requestDTO)).thenReturn(updatedProduct);
     when(productPresenter.prepareSuccessView(any(ProductResponseDTO.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -148,7 +144,7 @@ class ProductRegisterInteractorTest {
     assertThat(response.getName()).isEqualTo("Notebook Gamer");
     assertThat(response.getDescription()).isEqualTo("Descrição atualizada");
     assertThat(response.getCreatedAt()).isEqualTo(createdAt.toString());
-    verify(productDsGateway).update(currentProduct, requestDTO);
+    verify(productDsGateway).update(currentProduct.getUuid(), requestDTO);
   }
 
   @Test
@@ -168,8 +164,8 @@ class ProductRegisterInteractorTest {
   @Test
   void givenExistingProductId_whenDeleteProduct_thenDeleteAndReturnSuccess() {
     UUID productId = UUID.randomUUID();
-    ProductDataMapper currentProduct =
-        productDataMapper(productId, "Fone", "Descrição", LocalDateTime.now());
+    ProductResponseDTO currentProduct =
+        new ProductResponseDTO(productId, "Fone", "Descrição", LocalDateTime.now().toString());
     ProductResponseDTO successResponse = new ProductResponseDTO();
 
     when(productDsGateway.findById(productId)).thenReturn(Optional.of(currentProduct));
@@ -343,15 +339,5 @@ class ProductRegisterInteractorTest {
 
   private ProductSku validSku(String skuCode) {
     return new CommonProductSku(skuCode, Map.of("cor", "preto"), new BigDecimal("499.90"), 8, true);
-  }
-
-  private ProductDataMapper productDataMapper(
-      UUID id, String name, String description, LocalDateTime createdAt) {
-    ProductDataMapper product = new ProductDataMapper();
-    product.setId(id);
-    product.setName(name);
-    product.setDescription(description);
-    product.setCreatedAt(createdAt);
-    return product;
   }
 }

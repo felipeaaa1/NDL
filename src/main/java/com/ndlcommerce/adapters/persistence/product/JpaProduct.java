@@ -4,6 +4,7 @@ import com.ndlcommerce.adapters.persistence.productSku.JpaProductSkuRepository;
 import com.ndlcommerce.adapters.persistence.productSku.ProductSkuDataMapper;
 import com.ndlcommerce.adapters.persistence.user.UserDataMapper;
 import com.ndlcommerce.config.SecurityFilter;
+import com.ndlcommerce.config.exception.BusinessException;
 import com.ndlcommerce.entity.model.interfaces.ProductSku;
 import com.ndlcommerce.useCase.interfaces.product.ProductRegisterDsGateway;
 import com.ndlcommerce.useCase.model.SliceResult;
@@ -73,8 +74,14 @@ public class JpaProduct implements ProductRegisterDsGateway {
   }
 
   @Override
-  public Optional<ProductDataMapper> findById(UUID uuid) {
-    return repository.findByIdAndActive(uuid, true);
+  public Optional<ProductResponseDTO> findById(UUID uuid) {
+    Optional<ProductDataMapper> byIdAndActive = repository.findByIdAndActive(uuid, true);
+    if (byIdAndActive.isEmpty()) {
+      return Optional.empty();
+    }
+    ProductDataMapper productDataMapper = byIdAndActive.get();
+    ProductResponseDTO productResponseDTO = this.mapperToDTO(productDataMapper);
+    return Optional.of(productResponseDTO);
   }
 
   @Override
@@ -83,9 +90,16 @@ public class JpaProduct implements ProductRegisterDsGateway {
   }
 
   @Override
-  public ProductDataMapper update(
-      ProductDataMapper productDataMapper, ProductUpdateRequestDTO requestDTO) {
+  public ProductResponseDTO update(UUID productDataMapperId, ProductUpdateRequestDTO requestDTO) {
+    Optional<ProductDataMapper> productDataMapperOptional =
+        repository.findById(productDataMapperId);
+    if (productDataMapperOptional.isEmpty()) {
+      throw new BusinessException("Product not found");
+    }
+    ProductDataMapper productDataMapper = productDataMapperOptional.get();
 
+    UserDataMapper userLogado = securityFilter.obterUsuarioLogado();
+    productDataMapper.setUpdatedBy(userLogado.getId());
     productDataMapper.setName(
         requestDTO.getName() == null ? productDataMapper.getName() : requestDTO.getName());
     productDataMapper.setDescription(
@@ -98,14 +112,19 @@ public class JpaProduct implements ProductRegisterDsGateway {
         requestDTO.getCategory() == null
             ? productDataMapper.getCategoryId()
             : requestDTO.getCategory());
-    return repository.save(productDataMapper);
+    ProductDataMapper savedProductDataMapper = repository.save(productDataMapper);
+    return mapperToDTO(savedProductDataMapper);
   }
 
   @Override
   public void delete(UUID productId) {
-    ProductDataMapper ProductDataMapper = findById(productId).get();
-    ProductDataMapper.setActive(false);
-    repository.save(ProductDataMapper);
+    Optional<ProductDataMapper> byIdAndActive = repository.findByIdAndActive(productId, true);
+    if (byIdAndActive.isEmpty()) {
+      return;
+    }
+    ProductDataMapper productDataMapper = byIdAndActive.get();
+    productDataMapper.setActive(false);
+    repository.save(productDataMapper);
   }
 
   @Override
