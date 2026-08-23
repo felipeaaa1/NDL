@@ -1,6 +1,5 @@
 package com.ndlcommerce.useCase.interfaces.product;
 
-import com.ndlcommerce.adapters.persistence.product.ProductDataMapper;
 import com.ndlcommerce.useCase.model.SliceResult;
 import com.ndlcommerce.useCase.request.product.ProductDbRequestDTO;
 import com.ndlcommerce.useCase.request.product.ProductResponseDTO;
@@ -17,11 +16,11 @@ public interface ProductRegisterDsGateway {
 
   ProductResponseDTO save(ProductDbRequestDTO requestDTO);
 
-  Optional<ProductDataMapper> findById(UUID uuid);
+  Optional<ProductResponseDTO> findById(UUID uuid);
 
   boolean existsByNameAndIdNot(String name, UUID uuid);
 
-  ProductDataMapper update(ProductDataMapper productDataMapper, ProductUpdateRequestDTO requestDTO);
+  ProductResponseDTO update(UUID productDataMapperId, ProductUpdateRequestDTO requestDTO);
 
   void delete(UUID productId);
 
