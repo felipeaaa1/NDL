@@ -1,6 +1,7 @@
 package com.ndlcommerce.adapters.persistence.productSku;
 
 import com.ndlcommerce.useCase.interfaces.productSku.ProductSkuRegisterDsGateway;
+import com.ndlcommerce.useCase.model.OrderCursor;
 import com.ndlcommerce.useCase.model.SliceResult;
 import com.ndlcommerce.useCase.request.productSku.ProductSkuDbRequestDTO;
 import com.ndlcommerce.useCase.request.productSku.ProductSkuResponseDTO;
@@ -8,6 +9,7 @@ import java.text.Normalizer;
 import java.util.Locale;
 import java.util.Objects;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
@@ -22,13 +24,19 @@ public class JpaProductSku implements ProductSkuRegisterDsGateway {
 
   @Override
   public SliceResult<ProductSkuResponseDTO> list(
-      ProductSkuDbRequestDTO requestDTO, Integer page, Integer size) {
-    var sort = Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id"));
-    var pageable = PageRequest.of(page, size, sort);
-    var result =
+      ProductSkuDbRequestDTO requestDTO, OrderCursor cursor, Integer size) {
+
+    PageRequest pageable =
+        PageRequest.ofSize(size)
+            .withSort(Sort.by(Sort.Order.asc("createdAt")).and(Sort.by(Sort.Order.desc("id"))));
+
+    Slice<JpaProductSkuRepository.PublicProductSkuView> result =
         repository.findPublicSkus(
             Objects.requireNonNullElse(requestDTO.name(), ""),
             Objects.requireNonNullElse(requestDTO.description(), ""),
+            cursor == null,
+            cursor == null ? null : cursor.createdAt(),
+            cursor == null ? null : cursor.id(),
             requestDTO.brand(),
             requestDTO.category(),
             pageable);
@@ -44,6 +52,7 @@ public class JpaProductSku implements ProductSkuRegisterDsGateway {
                     slugify(row.getName()),
                     row.getPrice(),
                     null,
+                    row.getCreatedAt(),
                     row.getStock() > 0));
   }
 

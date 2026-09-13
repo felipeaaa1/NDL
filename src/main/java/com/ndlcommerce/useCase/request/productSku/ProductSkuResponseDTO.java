@@ -1,6 +1,7 @@
 package com.ndlcommerce.useCase.request.productSku;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record ProductSkuResponseDTO(
@@ -10,4 +11,5 @@ public record ProductSkuResponseDTO(
     String slug,
     BigDecimal price,
     String thumbnailUrl,
+    LocalDateTime createdAt,
     Boolean available) {}

@@ -1,9 +1,9 @@
 package com.ndlcommerce.useCase.interfaces.productSku;
 
-import com.ndlcommerce.useCase.model.SliceResult;
+import com.ndlcommerce.useCase.model.OrderCursor;
 import com.ndlcommerce.useCase.request.product.ProductFilterDTO;
-import com.ndlcommerce.useCase.request.productSku.ProductSkuResponseDTO;
+import java.util.Map;
 
 public interface ProductSkuInputBoundary {
-  SliceResult<ProductSkuResponseDTO> list(ProductFilterDTO filter, int page, int size);
+  Map<String, Object> list(ProductFilterDTO filter, OrderCursor cursor, int size);
 }
