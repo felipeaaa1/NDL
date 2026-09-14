@@ -5,7 +5,10 @@ import com.ndlcommerce.useCase.request.product.ProductFilterDTO;
 import com.ndlcommerce.useCase.request.product.ProductRequestDTO;
 import com.ndlcommerce.useCase.request.product.ProductUpdateRequestDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @EnableMethodSecurity
-@RequestMapping({"/product", "/products"})
+@RequestMapping("/product")
 @Tag(name = "Produto")
 public class ProductController {
 
@@ -33,13 +36,12 @@ public class ProductController {
     return ResponseEntity.ok().body(productCreated);
   }
 
-  @PostMapping("/search")
+  @GetMapping
   public ResponseEntity<?> listProducts(
-      @RequestBody(required = false) ProductFilterDTO filter,
+      @Nullable ProductFilterDTO filter,
       @RequestParam(name = "page", defaultValue = "0") int page,
-      @RequestParam(name = "size", defaultValue = "20") int size) {
-    ProductFilterDTO productFilter = filter != null ? filter : new ProductFilterDTO();
-    var result = productInputBoundary.list(productFilter, page, size);
+      @RequestParam(name = "size", defaultValue = "15") @Max(50) @Min(1) int size) {
+    var result = productInputBoundary.list(filter, page, size);
     return ResponseEntity.ok().body(result);
   }
 

@@ -1,15 +1,13 @@
-package com.ndlcommerce.config;
+package com.ndlcommerce.useCase.model;
 
 import java.util.List;
 import java.util.function.Function;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
-public class PaginatedResult<N> {
+public class PaginatedResult<T> {
 
-  private final List<N> content;
+  private final List<T> content;
   private final int page;
   private final int size;
   private final long totalElements;
@@ -18,7 +16,7 @@ public class PaginatedResult<N> {
   private final boolean isLast;
 
   public PaginatedResult(
-      List<N> content,
+      List<T> content,
       int page,
       int size,
       long totalElements,
@@ -34,12 +32,9 @@ public class PaginatedResult<N> {
     this.isLast = isLast;
   }
 
-  public <R> PaginatedResult<R> map(Function<N, R> mapper) {
-
-    List<R> mapped = this.content.stream().map(mapper).toList();
-
+  public <R> PaginatedResult<R> map(Function<T, R> mapper) {
     return new PaginatedResult<>(
-        mapped,
+        this.content.stream().map(mapper).toList(),
         this.page,
         this.size,
         this.totalElements,

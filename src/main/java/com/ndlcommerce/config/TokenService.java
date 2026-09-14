@@ -44,7 +44,7 @@ public class TokenService {
       return JWT.require(algorithm).withIssuer("auth-api").build().verify(token).getSubject();
     } catch (JWTVerificationException exception) {
       System.err.println(exception.toString());
-      throw new JWTVerificationException("Erro ao gerar token".concat(exception.getMessage()));
+      throw new JWTVerificationException("Erro ao gerar token ".concat(exception.getMessage()));
     }
   }
 

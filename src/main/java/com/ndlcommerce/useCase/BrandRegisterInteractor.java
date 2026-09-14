@@ -1,13 +1,14 @@
 package com.ndlcommerce.useCase;
 
-import com.ndlcommerce.adapters.persistence.brand.BrandDataMapper;
-import com.ndlcommerce.config.PaginatedResult;
 import com.ndlcommerce.entity.factory.interfaces.BrandFactory;
 import com.ndlcommerce.entity.model.interfaces.Brand;
 import com.ndlcommerce.useCase.interfaces.brand.BrandInputBoundary;
 import com.ndlcommerce.useCase.interfaces.brand.BrandPresenter;
 import com.ndlcommerce.useCase.interfaces.brand.BrandRegisterDsGateway;
+import com.ndlcommerce.useCase.model.PaginatedResult;
 import com.ndlcommerce.useCase.request.brand.BrandDbRequestDTO;
+import com.ndlcommerce.useCase.request.brand.BrandFilterDTO;
+import com.ndlcommerce.useCase.request.brand.BrandGatewayResponseDTO;
 import com.ndlcommerce.useCase.request.brand.BrandRequestDTO;
 import com.ndlcommerce.useCase.request.brand.BrandResponseDTO;
 import java.util.Optional;
@@ -41,20 +42,20 @@ public class BrandRegisterInteractor implements BrandInputBoundary {
     }
 
     BrandDbRequestDTO dbRequest = new BrandDbRequestDTO(brand.getName());
-    BrandDataMapper saved = brandDsGateway.save(dbRequest);
+    BrandGatewayResponseDTO saved = brandDsGateway.save(dbRequest);
 
     BrandResponseDTO response =
-        new BrandResponseDTO(saved.getId(), saved.getName(), saved.getCreatedAt().toString());
+        new BrandResponseDTO(saved.id(), saved.name(), saved.createdAt().toString());
 
     return brandPresenter.prepareSuccessView(response);
   }
 
   @Override
-  public PaginatedResult<?> list(BrandRequestDTO request, int page, int size) {
+  public PaginatedResult<BrandResponseDTO> list(BrandFilterDTO request, int page, int size) {
     BrandDbRequestDTO brandDbRequestDTO =
         new BrandDbRequestDTO(request != null ? request.name() : null);
 
-    PaginatedResult<BrandDataMapper> paginatedResult =
+    PaginatedResult<BrandGatewayResponseDTO> paginatedResult =
         brandDsGateway.list(brandDbRequestDTO, page, size);
 
     PaginatedResult<BrandResponseDTO> response =
@@ -65,7 +66,7 @@ public class BrandRegisterInteractor implements BrandInputBoundary {
 
   @Override
   public BrandResponseDTO getById(UUID uuid) {
-    Optional<BrandDataMapper> optional = brandDsGateway.getById(uuid);
+    Optional<BrandGatewayResponseDTO> optional = brandDsGateway.getById(uuid);
 
     if (optional.isEmpty()) {
       return brandPresenter.prepareFailView("NotFound");
@@ -78,7 +79,7 @@ public class BrandRegisterInteractor implements BrandInputBoundary {
 
   @Override
   public BrandResponseDTO updateBrand(UUID uuid, BrandRequestDTO requestDTO) {
-    Optional<BrandDataMapper> optional = brandDsGateway.getById(uuid);
+    Optional<BrandGatewayResponseDTO> optional = brandDsGateway.getById(uuid);
 
     if (optional.isEmpty()) {
       return brandPresenter.prepareFailView("NotFound");
@@ -95,14 +96,14 @@ public class BrandRegisterInteractor implements BrandInputBoundary {
     }
 
     BrandDbRequestDTO request = new BrandDbRequestDTO(brand.getName());
-    BrandDataMapper updated = brandDsGateway.update(uuid, request);
+    BrandGatewayResponseDTO updated = brandDsGateway.update(uuid, request);
 
     return brandPresenter.prepareSuccessView(mapperToDTO(updated));
   }
 
   @Override
   public BrandResponseDTO deleteBrand(UUID brandId) {
-    Optional<BrandDataMapper> optional = brandDsGateway.getById(brandId);
+    Optional<BrandGatewayResponseDTO> optional = brandDsGateway.getById(brandId);
 
     if (optional.isEmpty()) {
       return brandPresenter.prepareFailView("NotFound");
@@ -113,7 +114,7 @@ public class BrandRegisterInteractor implements BrandInputBoundary {
     return brandPresenter.prepareSuccessView(null);
   }
 
-  private BrandResponseDTO mapperToDTO(BrandDataMapper mapper) {
-    return new BrandResponseDTO(mapper.getId(), mapper.getName(), mapper.getCreatedAt().toString());
+  private BrandResponseDTO mapperToDTO(BrandGatewayResponseDTO brand) {
+    return new BrandResponseDTO(brand.id(), brand.name(), brand.createdAt().toString());
   }
 }

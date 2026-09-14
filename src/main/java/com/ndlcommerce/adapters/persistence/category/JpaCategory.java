@@ -1,9 +1,9 @@
 package com.ndlcommerce.adapters.persistence.category;
 
 import com.ndlcommerce.adapters.persistence.user.UserDataMapper;
-import com.ndlcommerce.config.PaginatedResult;
 import com.ndlcommerce.config.SecurityFilter;
 import com.ndlcommerce.useCase.interfaces.category.CategoryRegisterDsGateway;
+import com.ndlcommerce.useCase.model.PaginatedResult;
 import com.ndlcommerce.useCase.request.category.CategoryDbRequestDTO;
 import java.util.Optional;
 import java.util.UUID;

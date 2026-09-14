@@ -6,14 +6,15 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import com.ndlcommerce.adapters.persistence.brand.BrandDataMapper;
-import com.ndlcommerce.config.PaginatedResult;
 import com.ndlcommerce.entity.factory.interfaces.BrandFactory;
 import com.ndlcommerce.entity.model.implementation.CommonBrand;
 import com.ndlcommerce.entity.model.interfaces.Brand;
 import com.ndlcommerce.useCase.interfaces.brand.BrandPresenter;
 import com.ndlcommerce.useCase.interfaces.brand.BrandRegisterDsGateway;
+import com.ndlcommerce.useCase.model.PaginatedResult;
 import com.ndlcommerce.useCase.request.brand.BrandDbRequestDTO;
+import com.ndlcommerce.useCase.request.brand.BrandFilterDTO;
+import com.ndlcommerce.useCase.request.brand.BrandGatewayResponseDTO;
 import com.ndlcommerce.useCase.request.brand.BrandRequestDTO;
 import com.ndlcommerce.useCase.request.brand.BrandResponseDTO;
 import java.time.LocalDateTime;
@@ -44,9 +45,8 @@ public class BrandRegisterInteractorTests {
     Brand brand = new CommonBrand("Nike");
     BrandRequestDTO requestDTO = new BrandRequestDTO("Nike");
 
-    BrandDataMapper saved = new BrandDataMapper("Nike", UUID.randomUUID());
-    saved.setId(UUID.randomUUID());
-    saved.setCreatedAt(LocalDateTime.now());
+    BrandGatewayResponseDTO saved =
+        new BrandGatewayResponseDTO(UUID.randomUUID(), "Nike", LocalDateTime.now());
 
     when(brandFactory.create(anyString())).thenReturn(brand);
     when(brandDsGateway.existsByName("Nike")).thenReturn(false);
@@ -88,16 +88,15 @@ public class BrandRegisterInteractorTests {
 
   @Test
   void givenFiltersAndPagination_whenList_thenPrepareListSuccessView() {
-    BrandDataMapper mapper = new BrandDataMapper("Puma", UUID.randomUUID());
-    mapper.setId(UUID.randomUUID());
-    mapper.setCreatedAt(LocalDateTime.now());
+    BrandGatewayResponseDTO brand =
+        new BrandGatewayResponseDTO(UUID.randomUUID(), "Puma", LocalDateTime.now());
 
-    PaginatedResult<BrandDataMapper> page =
-        new PaginatedResult<>(List.of(mapper), 0, 10, 1, 1, true, true);
+    PaginatedResult<BrandGatewayResponseDTO> page =
+        new PaginatedResult<>(List.of(brand), 0, 10, 1, 1, true, true);
 
     when(brandDsGateway.list(any(BrandDbRequestDTO.class), anyInt(), anyInt())).thenReturn(page);
 
-    interactor.list(new BrandRequestDTO("Pu"), 0, 10);
+    interactor.list(new BrandFilterDTO("Pu"), 0, 10);
 
     verify(brandDsGateway, times(1)).list(any(BrandDbRequestDTO.class), eq(0), eq(10));
     verify(brandPresenter, times(1)).prepareListSuccessView(any());
@@ -107,11 +106,10 @@ public class BrandRegisterInteractorTests {
   void givenExistingBrandId_whenDelete_thenDeleteAndPrepareSuccessView() {
     UUID id = UUID.randomUUID();
 
-    BrandDataMapper mapper = new BrandDataMapper("Olympikus", UUID.randomUUID());
-    mapper.setId(id);
-    mapper.setCreatedAt(LocalDateTime.now());
+    BrandGatewayResponseDTO brand =
+        new BrandGatewayResponseDTO(id, "Olympikus", LocalDateTime.now());
 
-    when(brandDsGateway.getById(id)).thenReturn(Optional.of(mapper));
+    when(brandDsGateway.getById(id)).thenReturn(Optional.of(brand));
 
     interactor.deleteBrand(id);
 

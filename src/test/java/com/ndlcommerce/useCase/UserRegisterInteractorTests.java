@@ -75,8 +75,7 @@ public class UserRegisterInteractorTests {
 
   @Test
   void givenNullFilter_whenListUsers_thenUseEmptyFilterAndReturnListSuccess() {
-    ArgumentCaptor<UserDbRequestDTO> filterCaptor =
-        ArgumentCaptor.forClass(UserDbRequestDTO.class);
+    ArgumentCaptor<UserDbRequestDTO> filterCaptor = ArgumentCaptor.forClass(UserDbRequestDTO.class);
     List<UserResponseDTO> emptyResponse = List.of();
 
     when(userDsGateway.list(any(UserDbRequestDTO.class))).thenReturn(List.of());

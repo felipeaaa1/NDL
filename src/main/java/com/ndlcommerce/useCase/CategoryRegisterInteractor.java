@@ -1,12 +1,12 @@
 package com.ndlcommerce.useCase;
 
 import com.ndlcommerce.adapters.persistence.category.CategoryDataMapper;
-import com.ndlcommerce.config.PaginatedResult;
 import com.ndlcommerce.entity.factory.interfaces.CategoryFactory;
 import com.ndlcommerce.entity.model.interfaces.Category;
 import com.ndlcommerce.useCase.interfaces.category.CategoryInputBoundary;
 import com.ndlcommerce.useCase.interfaces.category.CategoryPresenter;
 import com.ndlcommerce.useCase.interfaces.category.CategoryRegisterDsGateway;
+import com.ndlcommerce.useCase.model.PaginatedResult;
 import com.ndlcommerce.useCase.request.category.CategoryDbRequestDTO;
 import com.ndlcommerce.useCase.request.category.CategoryRequestDTO;
 import com.ndlcommerce.useCase.request.category.CategoryResponseDTO;

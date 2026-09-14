@@ -85,6 +85,7 @@ public class NdlCommerceApplication {
   static TypeFilter removeModelAndEntitiesFilter() {
     return (MetadataReader mr, MetadataReaderFactory mrf) ->
         (!mr.getClassMetadata().getClassName().endsWith("DTO")
-            && !mr.getClassMetadata().getClassName().toLowerCase().contains("exception"));
+            && !mr.getClassMetadata().getClassName().toLowerCase().contains("exception")
+            && !mr.getClassMetadata().getClassName().contains(".useCase.model."));
   }
 }
