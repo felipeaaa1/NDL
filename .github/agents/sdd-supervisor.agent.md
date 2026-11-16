@@ -22,6 +22,8 @@ Ideia → Spec → Plano → Tasks → Implementação → Verificação
 ## Responsabilidades
 
 - Verificar quais artefatos existem em `specs/{feature}/` e dizer qual é a próxima etapa.
+- Ler `specs/README.md` (trilhas T1, T2, T3, ordem sugerida e mapa de dependências) e indicar a
+  próxima issue pela ordem e pelas dependências/bloqueios em `specs/{trilha}/issues.md`.
 - Não deixar pular etapa: sem spec não há plano; sem tasks não há implementação.
 - Lembrar que a implementação é feita pelo estudante, com Guanabara ensinando; Guanabara só
   escreve código quando solicitado explicitamente.
