@@ -15,7 +15,7 @@ e `issues.md` (issues pequenas, ordenadas, prontas para virar issues do GitHub).
 
 ## Ordem sugerida
 
-1. **Pré-requisitos soltos**: fechar o PR #22 e a issue #9 (baseline de
+1. **Pré-requisitos soltos**: fechar a issue #9 (baseline de
    performance no PostgreSQL, útil para comparar com o Mongo depois).
 2. **Trilha 1** (inteira). É a base: sem portas limpas não há "segundo adapter".
 3. **Trilha 3, fase A** (experimentos T3-01 a T3-10) pode ser intercalada com a
@@ -27,7 +27,7 @@ e `issues.md` (issues pequenas, ordenadas, prontas para virar issues do GitHub).
 ## Mapa de dependências
 
 ```
- PR #22 / #9 (baseline Postgres)
+ #9 (baseline Postgres)
         |
         v
  +--------------------------+
@@ -63,13 +63,13 @@ Bloqueios detalhados da trilha 1 sobre a trilha 2:
 | T2-11, T2-12 (Product/SKU) | T1-16 |
 | T2-13 (CI/relatório final) | T1-05 (ArchUnit no CI) |
 
-## Relação com as issues abertas (#8 a #20) e PR #22
+## Relação com as issues abertas (#8 a #20) e PR #22 (fechado)
 
 | Item | Situação | Decisão |
 |------|----------|---------|
 | #8 CORS | Independente | Fazer quando quiser; não bloqueia nada |
 | #9 Medir/otimizar listagem Postgres | Útil | Fazer **antes** da trilha 2 (baseline) |
-| PR #22 índice de SKU (migration) | Em aberto | Mergear antes de T1; evita conflito |
+| PR #22 índice de SKU (migration) | Fechado | Nada a fazer |
 | #10, #11, #12, #13, #14, #15 | Elasticsearch | **Adiar** (conflita com foco em Mongo) |
 | #18 consumir eventos e sincronizar ES | Elasticsearch | **Adiar**; ver T3-16 (consumer genérico) |
 | #20 recovery/versionamento do índice ES | Elasticsearch | **Adiar** |
