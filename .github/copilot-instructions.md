@@ -18,9 +18,13 @@ A spec é a fonte da verdade; código e testes devem rastrear os critérios de a
 |--------|-------|
 | `sdd-supervisor` | Indica a próxima etapa e o agente certo |
 | `maria-analyst` | Elicita e escreve a spec |
-| `wilson-architect` | Plano (Clean Architecture) e tasks |
+| `wilson-architect` | Plano (Arquitetura Hexagonal) e tasks |
 | `guanabara` | Desenvolvedor mentor: ensina; só implementa se solicitado |
 | `carla-qa` | Cenários, revisão e verificação |
+
+Trilhas de estudo (migração Hexagonal + ArchUnit, MongoDB, threads): `specs/README.md`, com
+`spec.md` e `issues.md` em `specs/{trilha}/`. Alvo arquitetural: Hexagonal; o código atual ainda
+é Clean Architecture e ambos os layouts coexistem durante a migração.
 
 ## Regras gerais
 
