@@ -43,7 +43,7 @@ para **uma task pequena**. Antes disso, peça dicas, não a solução.
 
 ## Passo 0 — Preparação
 
-1. [ ] Mergear o PR #22 (índice de SKU) para evitar conflito na T1.
+1. [x] ~~Mergear o PR #22 (índice de SKU)~~ (PR #22 já fechado).
 2. [ ] Fazer a issue #9 (baseline de performance da listagem no PostgreSQL).
 3. [ ] Rotular #10, #11, #12, #13, #14, #15, #18 e #20 como `adiado`.
 4. [ ] Comentar em #16, #17 e #19 apontando para as issues T3 equivalentes:
@@ -54,7 +54,7 @@ para **uma task pequena**. Antes disso, peça dicas, não a solução.
    | #17 RabbitMQ | T3-15 |
    | #19 Resiliência | T3-12 |
 
-**Critério de pronto**: PR #22 mergeado, #9 fechada com números anotados,
+**Critério de pronto**: #9 fechada com números anotados,
 rótulos aplicados, três comentários feitos, `.\mvnw.cmd clean verify` verde.
 
 ## Passo 1 — Trilha 1 (Hexagonal + ArchUnit, 20 issues)
@@ -133,7 +133,7 @@ Avance somente se:
 | Sintoma | Causa provável | O que fazer |
 |---------|----------------|-------------|
 | `verify` falha no ArchUnit | Nova violação além do freeze | Corrija a dependência; não aumente o freeze |
-| Conflito no PR da T1 | PR #22 não mergeado | Conclua o Passo 0 e atualize a branch |
+| Conflito no PR da T1 | Branch desatualizada em relação à main | Atualize a branch com a main (git fetch && git merge origin/main) |
 | T2 bloqueada | Issue T1 exigida pendente | Consulte a tabela de bloqueios |
 | Testcontainers não sobe | Docker parado | Inicie o Docker e rode de novo |
 | Travou numa task | Conceito não entendido | Peça dica ao `guanabara`; só depois "implemente" |
