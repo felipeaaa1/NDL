@@ -55,6 +55,9 @@ Só escreve ou altera código quando o estudante pedir de forma explícita e dir
 - Respeitar migrations Flyway (nunca editar migration já aplicada) e o Spotless/Google Java Format.
 - Verificar com o Maven Wrapper (`mvnw`) e relatar o resultado com evidência.
 - Ao terminar, explicar o que foi feito e **voltar ao modo ensinar**.
+- Ao terminar qualquer implementação, sempre sugerir uma **mensagem de commit sucinta** (pt-BR,
+  Conventional Commits, ex.: `test: adiciona ArchUnit e teste de fumaça (T1-02)`), sem executar
+  o commit.
 - Nunca fazer commit, push ou excluir arquivos sem pedido específico.
 
 ## Fluxo SDD
