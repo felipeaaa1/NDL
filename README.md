@@ -1,6 +1,6 @@
 # 🛒 NDL-Commerce
 
-NDL-Commerce é um projeto de **E-commerce** desenvolvido em **Java 21** com **Spring Boot**, seguindo os princípios da **Arquitetura Limpa (Clean Architecture)**.
+NDL-Commerce é um projeto de **E-commerce** desenvolvido em **Java 25** com **Spring Boot 3.5.6**, seguindo os princípios da **Arquitetura Limpa (Clean Architecture)**.
 
 O objetivo é construir uma aplicação modular, escalável e de fácil manutenção, separando regras de negócio de frameworks e detalhes de infraestrutura.
 
@@ -8,12 +8,30 @@ O objetivo é construir uma aplicação modular, escalável e de fácil manuten�
 
 ## 📖 Tecnologias Utilizadas
 
-- **Java 21**
-- **Spring Boot**
+- **Java 25**
+- **Spring Boot 3.5.6**
 - **Flyway**
 - **PostgreSQL**
 - **JPA/Hibernate**
 - **Arquitetura Limpa (Clean Architecture)**
+
+---
+
+## 🛠️ Build e testes locais
+
+Use JDK 25 e o Maven Wrapper do projeto:
+
+```powershell
+.\mvnw.cmd -version
+.\mvnw.cmd clean verify
+.\mvnw.cmd spotless:check
+.\mvnw.cmd -Dtest=ArchitectureSmokeTest test
+```
+
+No Linux/macOS, use `./mvnw` no lugar de `.\mvnw.cmd`.
+Os testes de integração usam o profile `test`, com H2 em memória e Flyway
+desabilitado; esses comandos não executam migrações no PostgreSQL.
+O CI também usa JDK 25 e o Wrapper; o Dockerfile usa Temurin 25 no build e na execução.
 
 ---
 
