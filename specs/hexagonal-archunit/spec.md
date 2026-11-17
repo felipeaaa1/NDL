@@ -94,7 +94,7 @@ antes de mexer).
 | `adapters.persistence.*.{X}DataMapper` (@Entity) | `adapters.out.persistence.jpa.{x}` (`{X}JpaEntity`) |
 | `adapters.persistence.*.Jpa{X}Repository` | `adapters.out.persistence.jpa.{x}` |
 | `adapters.presenter.productSku.*` | `adapters.in.web.presenter` |
-| `config.exception.Business/InvalidField/EntityAlreadyExists` | `domain.exception` (ou `application.exception`; decida na T1-01) |
+| `config.exception.Business/InvalidField/EntityAlreadyExists` | `application.exception` (ADR 0001; revisão final pendente) |
 | `config.exception.GlobalExceptionHandler` | `adapters.in.web.exception` |
 | `config.EmailService`, `EmailSendException` | `adapters.out.email` + porta em `application.port.out` |
 | `config.TokenService`, `AuthorizationService`, `SecurityFilter` | `adapters.in.web.security` (+ porta `CurrentUserProvider`) |
@@ -110,7 +110,36 @@ antes de mexer).
   ports são interfaces; `adapters.in` não acessa `adapters.out`; sem ciclos;
   naming.
 - Step de CI para as regras e estratégia de congelamento de violações.
+- Migrar o NDL para Java 25 como pré-requisito técnico da rede de proteção,
+  alinhando Maven, CI, Docker e documentação relacionada.
 - Atualizar `AGENTS.md` e `.github/copilot-instructions.md` ao final (T1-20).
+
+## Regras para o pré-requisito Java 25
+
+- Usar uma versão de Spring Boot 3 com suporte a Java 25 e garantir a
+  compatibilidade dos annotation processors e do formatador com essa versão
+  do Java. A escolha de versões e a decomposição em tarefas ficam para a
+  etapa posterior.
+- Alinhar compilação e execução Maven, ambiente do CI, imagens de build e
+  execução Docker e documentação relacionada ao Java 25.
+- Preservar contratos HTTP, autenticação e autorização JWT, regras de negócio
+  e limites arquiteturais; a migração tecnológica não autoriza alterações
+  funcionais nem amplia o escopo das trilhas 2 e 3.
+- Manter os experimentos da trilha 3 sobre recursos introduzidos no Java 21,
+  sem duplicar ou replanejar seu escopo nesta trilha.
+
+### Estado da migração Java 25
+
+O alinhamento estático para Spring Boot 3.5.6 e Java 25 foi aplicado em Maven,
+CI, Docker e documentação. Java 25.0.4.1 e Maven 3.9.11 foram confirmados,
+mas a migração ainda não está validada nem T1-02 concluída: a resolução do
+parent Spring Boot 3.5.6 falhou com HTTP 403 no mirror antes da compilação.
+Não há resultados de `clean verify`, `spotless:check` ou do teste focal;
+nenhum experimento negativo de ArchUnit foi iniciado. Docker não estava
+disponível no `PATH`. Portanto, os critérios de aceite permanecem pendentes.
+
+O congelamento de violações é uma tarefa posterior e não é pré-requisito para
+T1-02.
 
 ## Fora de escopo
 
@@ -121,6 +150,19 @@ antes de mexer).
 
 ## Critérios de aceite
 
+- [ ] Migração para Java 25 demonstrada com Spring Boot 3 suportado,
+      annotation processors e formatador compatíveis; Maven, CI, Docker e
+      documentação relacionada alinhados.
+- [ ] Em Java 25, `./mvnw clean verify`, `./mvnw spotless:check` e
+      `./mvnw -Dtest=ArchitectureSmokeTest test` passam, com evidências.
+- [ ] O CI executa `clean verify` em Java 25 com sucesso comprovado.
+- [ ] Uma violação intencional da regra de `ArchitectureSmokeTest` provoca
+      falha verificável; o experimento é restaurado e o teste volta a passar.
+- [ ] Build e execução da imagem Docker alinhada são verificados. Se Docker
+      estiver indisponível, registrar a verificação como pendente, sem
+      alegar aprovação.
+- [ ] Evidências de testes confirmam a preservação dos contratos HTTP,
+      autenticação e autorização JWT, regras de negócio e proteção arquitetural.
 - [ ] `./mvnw verify` verde após **cada** issue (PR pequeno e verde).
 - [ ] `com.tngtech.archunit:archunit-junit5` (test) no `pom.xml`.
 - [ ] Testes em `com.ndlcommerce.architecture` rodam no `verify`.
@@ -136,6 +178,10 @@ antes de mexer).
 
 ## Riscos e cuidados
 
+- Incompatibilidades de Spring Boot, annotation processors ou formatador com
+  Java 25 podem impedir o build ou invalidar a rede de proteção.
+- Docker indisponível impede comprovar a imagem e deixa essa verificação
+  pendente até haver ambiente adequado.
 - **Scanner manual de beans** (`NdlCommerceApplication`): ao mover pacotes,
   confira o filtro de includes/excludes; `NdlCommerceApplicationTests` e
   `TestConfig` são seu alarme.
