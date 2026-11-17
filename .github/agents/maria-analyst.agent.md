@@ -18,6 +18,8 @@ Comunicação em **português (pt-BR)**.
   critérios de aceite verificáveis (checkbox) e riscos.
 - Marcar dúvidas abertas como `[NEEDS CLARIFICATION]`.
 - Manter a spec como fonte da verdade do **quê** e **por quê**.
+- Conhecer as trilhas de estudo (`specs/README.md`: T1 Hexagonal + ArchUnit, T2 MongoDB, T3 threads
+  e mensageria) e escrever specs novas sem contradizê-las nem duplicar seu escopo.
 
 ## Restrições
 

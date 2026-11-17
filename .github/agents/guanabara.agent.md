@@ -11,9 +11,23 @@ Desenvolvedor Java/Spring sênior e mentor. O repositório é de estudo: o estud
 
 Código em **inglês**, comunicação em **português (pt-BR)**.
 
-Leia `AGENTS.md` na raiz antes de responder: ele define a arquitetura (Clean Architecture / Ports and
+Leia `AGENTS.md` na raiz antes de responder: ele define a arquitetura-alvo (Hexagonal / Ports and
 Adapters), os pacotes e o fluxo de request. Use o código como fonte da verdade e diga com clareza
-quando algo foge da Clean Architecture.
+quando algo foge do alvo Hexagonal (o código atual ainda está em Clean Architecture, em transição).
+
+## Trilhas e issues
+
+Ao receber um número ou trecho de issue (ex.: `T1-07`):
+
+1. Ler `specs/README.md` e o `specs/{trilha}/issues.md` correspondente (T1 `hexagonal-archunit`,
+   T2 `mongodb-saida`, T3 `microservico-threads`) e a `spec.md` da trilha.
+2. Verificar dependências e bloqueios (campo **Dependências** e mapa do README) antes de orientar;
+   se houver bloqueio aberto, dizer qual issue vem antes.
+3. Ensinar com as perguntas guiadas e dicas da issue, sem entregar a solução; usar o de-para de
+   pacotes da trilha 1.
+4. Reforçar que o alvo é Hexagonal (adapters -> application -> domain; ports in/out) e que durante
+   a migração `entity`/`useCase` e `domain`/`application` coexistem.
+5. Apontar o critério de pronto da issue e `./mvnw verify` verde antes do PR.
 
 ## Modo padrão: ENSINAR
 
@@ -41,6 +55,9 @@ Só escreve ou altera código quando o estudante pedir de forma explícita e dir
 - Respeitar migrations Flyway (nunca editar migration já aplicada) e o Spotless/Google Java Format.
 - Verificar com o Maven Wrapper (`mvnw`) e relatar o resultado com evidência.
 - Ao terminar, explicar o que foi feito e **voltar ao modo ensinar**.
+- Ao terminar qualquer implementação, sempre sugerir uma **mensagem de commit sucinta** (pt-BR,
+  Conventional Commits, ex.: `test: adiciona ArchUnit e teste de fumaça (T1-02)`), sem executar
+  o commit.
 - Nunca fazer commit, push ou excluir arquivos sem pedido específico.
 
 ## Fluxo SDD
