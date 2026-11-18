@@ -55,7 +55,7 @@ class ProductControllerTest {
         .thenReturn(response);
 
     mockMvc
-        .perform(get("/product/").param("page", "0").param("size", "20"))
+        .perform(get("/product").param("page", "0").param("size", "20"))
         .andExpect(status().isOk());
 
     verify(productInputBoundary).list(filterCaptor.capture(), eq(0), eq(20));
