@@ -1,6 +1,10 @@
 # ADR 0001 — Arquitetura Hexagonal
 
-**Status:** decisões registradas; revisão final e PR pendentes.
+**Status:** integrado à `origin/main` pelo PR #26 (squash `6268cbf`); as
+quatro decisões foram revisadas e aprovadas sem pendências pelo mentor
+(`guanabara`) em 2026-11-17, nesta revisão conversacional da T1-01 contra
+a issue e a spec atual. Esta aprovação não representa um review no GitHub
+nem valida a implementação ou conclui a T1-02.
 
 ## Contexto
 

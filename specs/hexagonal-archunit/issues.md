@@ -23,13 +23,13 @@ de-para inicial está em `specs/hexagonal-archunit/spec.md`.
 o que é porta in x out; escrever decisão com trade-offs.
 
 **Tarefas:**
-- [ ] Criar `docs/adr/0001-arquitetura-hexagonal.md` (contexto, decisão,
+- [x] Criar `docs/adr/0001-arquitetura-hexagonal.md` (contexto, decisão,
       alternativas, consequências).
-- [ ] Decidir onde ficam as exceções (`domain.exception` x
+- [x] Decidir onde ficam as exceções (`domain.exception` x
       `application.exception`) e justificar.
-- [ ] Decidir nomes: `*PersistenceAdapter`, `*JpaEntity`, `*UseCase` ou
+- [x] Decidir nomes: `*PersistenceAdapter`, `*JpaEntity`, `*UseCase` ou
       manter `*InputBoundary` em `port.in`.
-- [ ] Decidir se o Presenter continua como porta de saída ou se o service
+- [x] Decidir se o Presenter continua como porta de saída ou se o service
       passa a devolver resultado e o controller formata.
 
 **Dicas/perguntas:**
@@ -45,14 +45,112 @@ o que é porta in x out; escrever decisão com trade-offs.
 (`guanabara`) sem pendências. Verificável: arquivo existe e responde às 4
 decisões.
 
+**Status/evidências — QA independente Carla, 2026-11-17:** as quatro tarefas
+de ADR/decisões estão concluídas; PR #26 com merge confirmado por squash
+`6268cbf`. As alternativas já decididas pelo usuário não são reabertas.
+- [x] Revisão do mentor (`guanabara`) sem pendências, realizada nesta
+      conversa em 2026-11-17 contra a T1-01 e a spec atual: alvo/de-para
+      Hexagonal com dependências para dentro; exceções em
+      `application.exception`, sem dependência do domínio nem status HTTP;
+      nomes de portas, adapters e entidades JPA definidos; Presenter mantido
+      como porta de saída, implementado no adapter web. Parecer: ADR aprovado.
+      A seção curta de alternativas foi preservada por decisão do usuário.
+      A consulta anterior `reviews: []` não registra esta revisão
+      conversacional; não se atribui aprovação ao GitHub ou ao merge.
+      Esta aprovação documental não valida a implementação nem altera
+      o bloqueio HTTP 403 e as pendências da T1-02.
+
 **Dependências:** nenhuma.
 **Labels:** `trilha-1`, `arquitetura`, `docs`.
 
 ---
 
+## Pré-requisito técnico — Migrar para Java 25 antes da validação T1-02
+
+Esta sequência é um gate técnico anterior à T1-02; não cria nem renumera
+issues. Execute as tarefas em ordem e mantenha a regra de fumaça da T1-02
+simples: a migração de plataforma não deve antecipar regras arquiteturais.
+
+**Objetivo:** alinhar build, CI, Docker e documentação a Java 25, preservando
+contratos HTTP, JWT, regras de negócio e as trilhas 2 e 3.
+
+**Tarefas:**
+- [ ] Atualizar a plataforma e compilação em `pom.xml`: Spring Boot `3.5.6`,
+      `java.version`/`release` `25` e compiler plugin herdado na versão
+      `3.14.0`; manter os annotation processors existentes e confirmar
+      Lombok `1.18.40` gerenciado. Não fixar um plugin antigo nem remover
+      processadores.
+  - [x] Implementação estática: parent Boot `3.5.6`, Java/release `25`,
+        compiler herdado e annotation processors preservados no POM.
+  - [ ] Confirmar versões efetivas do compiler e Lombok após resolver o parent.
+- [ ] Alinhar dependências e plugins que precisam acompanhar a plataforma em
+      `pom.xml`: Spotless `3.0.0` com Google Java Format `1.30.0`, Springdoc
+      `2.8.9` e Flyway PostgreSQL/plugin em `11.7.2` gerenciado. Manter
+      Hypersistence `hibernate-63:3.8.3`, JaCoCo `0.8.14` e ArchUnit `1.5.1`;
+      não atualizar dependências sem relação com a compatibilidade.
+  - [x] Implementação estática: Spotless `3.0.0`, Google Java Format `1.30.0`,
+        Springdoc `2.8.9` e Flyway sob gerenciamento; demais declarações
+        preservadas conforme QA.
+  - [ ] Confirmar versões efetivamente resolvidas, inclusive Flyway gerenciado.
+- [ ] Com JDK 25 disponível, validar a configuração Maven local antes da
+      T1-02: `./mvnw clean verify` e `./mvnw spotless:check` (Windows:
+      `mvnw.cmd clean verify` e `mvnw.cmd spotless:check`). Se o ambiente não
+      tiver JDK 25, registrar o bloqueio; não instalar nem alterar configuração
+      global da máquina como parte desta trilha.
+- [x] Atualizar `.github/workflows/ci.yml` para JDK 25; executar Maven pelo
+      Wrapper e incluir `spotless:check`, mantendo `clean verify`. Conferir a
+      ordem e os comandos do workflow.
+- [ ] Atualizar as duas etapas do `Dockerfile` para Eclipse Temurin 25
+      (JDK no build e JRE na execução), inclusive os metadados que declaram a
+      versão. Validar com `docker build`; se Docker estiver indisponível,
+      registrar a evidência como pendente, sem declarar aprovação.
+  - [x] Implementação estática: duas etapas e metadados em Temurin 25.
+  - [ ] Validar build da imagem; Docker ausente do `PATH` no ambiente de QA.
+- [x] Atualizar referências à versão da stack em `README.md`, `AGENTS.md` e
+      documentação de setup relacionada (incluindo instruções do Copilot, se
+      mencionarem a versão). Limitar esta tarefa às referências tecnológicas:
+      a atualização arquitetural desses documentos continua na T1-20. Preservar
+      as referências a Java 21 que descrevem deliberadamente os experimentos
+      da trilha 3.
+- [ ] Depois de concluídas as tarefas acima, executar a T1-02 em Java 25 sem
+      ampliar sua regra simples. Com `ArchitectureSmokeTest` criado, comprovar
+      `./mvnw -Dtest=ArchitectureSmokeTest test`, repetir
+      `./mvnw clean verify` e `./mvnw spotless:check`, provocar a falha
+      intencional prevista na T1-02, restaurar a regra e confirmar que o teste
+      volta a passar. Registrar os resultados do CI Java 25 e do build Docker
+      (ou o bloqueio documentado).
+
+**Status — 2026-11-17:** migração de plataforma aplicada, não validada.
+Os itens combinados acima permanecem abertos quando dependem de resolução
+efetiva ou execução; os subitens distinguem a implementação estática concluída.
+Evidências e bloqueios de execução estão registrados na T1-02 abaixo.
+
+**Arquivos prováveis:** `pom.xml`, `.github/workflows/ci.yml`, `Dockerfile`,
+`README.md`, `AGENTS.md` e documentação de setup relacionada.
+
+**Critério de pronto:** Maven local e CI usam Java 25; `clean verify` e
+`spotless:check` passam; o teste de fumaça da T1-02 passa após o experimento
+de falha e restauração; build Docker comprovado ou pendência registrada; as
+referências de stack estão alinhadas. Nenhum contrato HTTP/JWT ou
+comportamento funcional foi alterado.
+
+**Fora do escopo:** instalar/configurar Java globalmente, alterar banco ou
+executar Flyway, criar/editar migrations, refatorar arquitetura, alterar
+contratos ou ampliar as trilhas 2 e 3.
+
+**Referências oficiais:** [requisitos de sistema do Spring Boot 3.5](https://docs.spring.io/spring-boot/3.5/system-requirements.html),
+[Maven Compiler Plugin](https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html),
+[Spotless Maven](https://github.com/diffplug/spotless/tree/main/plugin-maven),
+[GitHub setup-java](https://github.com/actions/setup-java) e
+[Eclipse Temurin no Docker Hub](https://hub.docker.com/_/eclipse-temurin).
+
+---
+
 ## [TRILHA-1] T1-02 — Adicionar ArchUnit e um teste de fumaça
 
-**Necessidade/contexto:** o `pom.xml` não tem ArchUnit.
+**Necessidade/contexto:** originalmente o `pom.xml` não tinha ArchUnit;
+a dependência e o teste de fumaça agora estão implementados, com validação
+bloqueada conforme as evidências abaixo.
 
 **Objetivo:** dependência funcionando com uma regra trivial.
 
@@ -60,12 +158,14 @@ decisões.
 `@ArchTest`, escopo `test`, importação sem testes (`DoNotIncludeTests`).
 
 **Tarefas:**
-- [ ] Adicionar `com.tngtech.archunit:archunit-junit5` com `<scope>test`
+- [x] Adicionar `com.tngtech.archunit:archunit-junit5` com `<scope>test`
       (confira a última versão estável no Maven Central).
-- [ ] Criar `src/test/java/com/ndlcommerce/architecture/ArchitectureSmokeTest`.
-- [ ] Uma regra: "nenhuma classe depende de `java.util.logging`" (qualquer uma
-      barata) e veja-a passar; depois force falhar e leia a mensagem.
-- [ ] Importar só `com.ndlcommerce` e excluir testes.
+- [x] Criar `src/test/java/com/ndlcommerce/architecture/ArchitectureSmokeTest`.
+- [x] Declarar uma regra simples: "nenhuma classe depende de `java.util.logging`",
+      usando a regra padrão `NO_CLASSES_SHOULD_USE_JAVA_UTIL_LOGGING`.
+- [ ] Executar a regra e vê-la passar.
+- [ ] Depois forçar falha e ler a mensagem; restaurar e comprovar nova passagem.
+- [x] Importar só `com.ndlcommerce` e excluir testes.
 
 **Dicas/perguntas:**
 - `@AnalyzeClasses(packages = "...", importOptions = ...)` x `ArchRuleDefinition`
@@ -78,7 +178,33 @@ decisões.
 **Critério de pronto:** `./mvnw -Dtest=ArchitectureSmokeTest test` verde;
 alterando a regra para algo falso ele falha com mensagem legível.
 
-**Dependências:** nenhuma.
+**Status:** implementada; validação bloqueada. Não declarar T1-02 concluída.
+
+**Evidências — QA independente Carla, 2026-11-17:**
+- Inspeção estática confirmou `archunit-junit5:1.5.1` em escopo `test`,
+  `ArchitectureSmokeTest`, a regra padrão
+  `NO_CLASSES_SHOULD_USE_JAVA_UTIL_LOGGING` e
+  `@AnalyzeClasses` para `com.ndlcommerce` com `DoNotIncludeTests`.
+  A versão declarada não equivale a uma consulta de última versão estável.
+- Pré-requisito Java 25: POM, CI com Wrapper/`spotless:check`, Docker Temurin 25
+  e documentação de stack (incluindo README e AGENTS) atualizados estaticamente.
+  XML e `git diff --check` aprovados no QA; não comprovam compilação ou testes.
+- Tentativas no QA: `.\mvnw.cmd clean verify`,
+  `.\mvnw.cmd spotless:check` e
+  `.\mvnw.cmd -Dtest=ArchitectureSmokeTest test`.
+  Todas bloqueadas na leitura do projeto: mirror Maven retornou HTTP `403`
+  ao resolver o parent `org.springframework.boot:spring-boot-starter-parent:3.5.6`,
+  antes da compilação e sem executar as verificações solicitadas.
+  Não foi possível confirmar versões efetivas herdadas/gerenciadas.
+- Experimento negativo não iniciado; passagem inicial e após restauração
+  pendentes. CI Java 25 verde não confirmado; build Docker pendente porque
+  `docker` está ausente do `PATH`. Regressão funcional/HTTP/JWT não verificada.
+- Este registro utiliza as evidências fornecidas pelo QA; nenhum comando de
+  teste/build foi reexecutado nesta atualização documental.
+- Regras-alvo, freeze e ciclos pertencem às próximas issues; não são bloqueios
+  antecipados da T1-02. T1-03 a T1-20 permanecem inalteradas.
+
+**Dependências:** pré-requisito técnico Java 25 acima.
 **Labels:** `trilha-1`, `archunit`, `testes`.
 
 ---

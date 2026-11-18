@@ -24,8 +24,8 @@ When the user asks for analysis, review, planning, explanation, guidance, or
 
 NDL-Commerce is an e-commerce backend built with:
 
-- Java 21
-- Spring Boot 3.3.4
+- Java 25
+- Spring Boot 3.5.6
 - Maven / Maven Wrapper
 - Spring Web MVC
 - Spring Data JPA
