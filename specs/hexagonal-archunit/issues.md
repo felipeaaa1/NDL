@@ -150,7 +150,7 @@ contratos ou ampliar as trilhas 2 e 3.
 
 **Necessidade/contexto:** originalmente o `pom.xml` não tinha ArchUnit;
 a dependência e o teste de fumaça agora estão implementados, com validação
-bloqueada conforme as evidências abaixo.
+do teste de fumaça registrada nas evidências abaixo.
 
 **Objetivo:** dependência funcionando com uma regra trivial.
 
@@ -161,10 +161,10 @@ bloqueada conforme as evidências abaixo.
 - [x] Adicionar `com.tngtech.archunit:archunit-junit5` com `<scope>test`
       (confira a última versão estável no Maven Central).
 - [x] Criar `src/test/java/com/ndlcommerce/architecture/ArchitectureSmokeTest`.
-- [x] Declarar uma regra simples: "nenhuma classe depende de `java.util.logging`",
+- [x] Declarar uma regra simples contra atribuições a campos de tipos de `java.util.logging`,
       usando a regra padrão `NO_CLASSES_SHOULD_USE_JAVA_UTIL_LOGGING`.
-- [ ] Executar a regra e vê-la passar.
-- [ ] Depois forçar falha e ler a mensagem; restaurar e comprovar nova passagem.
+- [x] Executar a regra e vê-la passar.
+- [x] Depois forçar falha e ler a mensagem; restaurar e comprovar nova passagem.
 - [x] Importar só `com.ndlcommerce` e excluir testes.
 
 **Dicas/perguntas:**
@@ -178,7 +178,20 @@ bloqueada conforme as evidências abaixo.
 **Critério de pronto:** `./mvnw -Dtest=ArchitectureSmokeTest test` verde;
 alterando a regra para algo falso ele falha com mensagem legível.
 
-**Status:** implementada; validação bloqueada. Não declarar T1-02 concluída.
+**Status:** implementação e ciclo do teste de fumaça verificados.
+As pendências do pré-requisito técnico Java 25 permanecem registradas acima.
+
+**Evidências — acompanhamento, 2026-11-18:**
+- Execução pelo assistente com Java `25.0.4.1`:
+  `.\mvnw.cmd "-Dtest=ArchitectureSmokeTest" test`; 1 teste, sem falhas ou erros.
+- A chamada direta `Logger.getLogger(...).info(...)` passou. A inspeção do
+  bytecode confirmou que a regra padrão do ArchUnit `1.5.1` verifica atribuições
+  a campos de tipos de `java.util.logging`, não toda dependência desse pacote.
+- O estudante confirmou falha ao introduzir o campo de logger e sucesso após
+  removê-lo, mantendo a regra original. Esse ciclo foi executado pelo estudante,
+  não pelo assistente.
+- Este registro não comprova `clean verify`, CI ou build Docker, nem encerra
+  suas pendências anteriores. As evidências de QA abaixo são históricas.
 
 **Evidências — QA independente Carla, 2026-11-17:**
 - Inspeção estática confirmou `archunit-junit5:1.5.1` em escopo `test`,
@@ -222,12 +235,27 @@ medir.
 `onionArchitecture()`, relatório de violações.
 
 **Tarefas:**
-- [ ] Criar `HexagonalRulesTest` com as regras na **nomenclatura alvo**
+- [x] Criar `HexagonalRulesTest` com as regras na **nomenclatura alvo**
       (`..domain..`, `..application..`, `..adapters.in..`, `..adapters.out..`).
-- [ ] Rodar contra o estado atual (como os pacotes ainda são `entity` /
-      `useCase`, escreva uma versão "atual" das mesmas ideias) e copiar o
-      relatório de violações para a descrição do PR.
-- [ ] Contar violações por tipo (useCase->adapters, DTO->jakarta, etc.).
+- [x] Rodar contra o estado atual (como os pacotes ainda são `entity` /
+      `useCase`, escreva uma versão "atual" das mesmas ideias).
+- [x] Copiar o relatório de violações para a descrição do PR #30.
+- [x] Contar violações por tipo (useCase->adapters, DTO->jakarta, etc.).
+
+**Evidências — acompanhamento, 2026-11-18:**
+- Commit `856f36e` adiciona as regras ArchUnit da T1-03.
+- `.\mvnw.cmd "-Dtest=HexagonalRulesTest" test`: 14 regras executadas,
+  4 falharam listando violações (esperado nesta issue), 0 erros.
+- Violações reportadas: `useCase -> adapters` (87), `useCase -> config` (3),
+  `useCase.request -> jakarta` (47) e ciclos entre pacotes (3). As contagens
+  representam dependências/ciclos detectados e podem se sobrepor.
+- `.\mvnw.cmd spotless:check`: passou.
+- O resumo da execução e das violações foi incluído na descrição do PR #30.
+- As regras do layout-alvo usam `allowEmptyShould(true)` enquanto seus pacotes
+  não existem; portanto, ainda não validam classes migradas.
+
+**Status:** T1-03 concluída; a implementação, a medição e a evidência no PR
+foram verificadas.
 
 **Dicas/perguntas:**
 - `layeredArchitecture().consideringOnlyDependenciesInLayers()` — o que muda?
