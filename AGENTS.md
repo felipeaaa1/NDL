@@ -36,18 +36,24 @@ NDL-Commerce is an e-commerce backend built with:
 - Springdoc OpenAPI
 - Spotless with Google Java Format
 
-The project follows an adaptation of Clean Architecture and Ports and Adapters.
-Use the code as the source of truth. Do not assume a pattern only from a package
-name.
+The code today is an adaptation of Clean Architecture (`entity`, `useCase`,
+`adapters`, `config`), in transition. Use the code as the source of truth. Do
+not assume a pattern only from a package name.
 
-Clean Architecture is the target direction for this repository.
+Hexagonal Architecture (Ports and Adapters) is the target direction for this
+repository: `domain`, `application` (ports in/out), `adapters` (in/out) and
+`config`, migrated incrementally and guarded by ArchUnit. See "Trilhas de
+estudo" below.
 
-If the current code does not follow Clean Architecture, say that clearly. Do not
+If the current code does not follow the Hexagonal target, say that clearly. Do not
 describe architectural debt as merely "a mix", "just the current style", or
 "acceptable because it already exists". Existing code can be useful context, but
 it is not proof that the design is correct.
 
 ## Main architecture
+
+Current (Clean Architecture) layout and flow; the Hexagonal target is described
+in "Hexagonal boundaries" and in `specs/hexagonal-archunit/spec.md`.
 
 Typical request flow:
 
@@ -89,6 +95,30 @@ Main package responsibilities:
 - `config`: security, JWT, exception handling, OpenAPI, and infrastructure.
 - `src/main/resources/db/migration`: Flyway migrations.
 
+Hexagonal target packages (`com.ndlcommerce`):
+
+- `domain`: models, factories, enums, and domain exceptions.
+- `application`: `port.in` (use cases), `port.out` (gateways, presenters, user),
+  `service`, `dto`, and `model`.
+- `adapters.in.web`: controllers, DTOs, presenters, exception handler, security.
+- `adapters.out.persistence.jpa.{feature}`: `*PersistenceAdapter`, `*JpaEntity`,
+  repositories, and mappers. Other outbound adapters (e.g. `adapters.out.email`).
+- `config`: wiring, beans, `SecurityConfiguration`, `OpenApiConfiguration`.
+
+## Trilhas de estudo
+
+O plano de migração e estudo está em `specs/README.md` (ordem, dependências e
+bloqueios). Há 3 trilhas, cada uma com `spec.md` e `issues.md`:
+
+- T1 `specs/hexagonal-archunit/`: Clean Architecture -> Hexagonal + ArchUnit.
+- T2 `specs/mongodb-saida/`: segundo adapter de saída (MongoDB).
+- T3 `specs/microservico-threads/`: concorrência, resiliência e mensageria.
+
+Durante a migração os dois layouts coexistem (`entity`/`useCase` e
+`domain`/`application`). Cada issue da T1 migra uma fatia, começando por Brand.
+Ao orientar, o mentor deve usar o de-para de pacotes de
+`specs/hexagonal-archunit/spec.md` e não tratar a coexistência como estado final.
+
 ## Mentoring workflow
 
 Before suggesting or implementing any backend change:
@@ -98,7 +128,7 @@ Before suggesting or implementing any backend change:
 3. Find the closest existing example in the repository.
 4. Trace the affected flow across layers.
 5. Explain the correct layer for the change.
-6. If the code does not follow Clean Architecture, explain exactly what is
+6. If the code does not follow the Hexagonal target, explain exactly what is
    wrong.
 7. Point to concrete files and lines when making claims.
 8. Suggest the smallest next step the user can take.
@@ -154,24 +184,30 @@ When implementation is requested:
 6. Report files changed, commands run, results, risks, and assumptions.
 7. Never commit or push anything.
 
-## Clean Architecture boundaries
+## Hexagonal boundaries
 
-Dependencies should generally point inward:
+Dependencies should point inward:
 
 ```text
-adapters -> useCase -> entity
+adapters -> application -> domain
 ```
 
-For this project, the clean target is:
+Current code (Clean Architecture naming): `adapters -> useCase -> entity`.
+`config` may see all layers.
+
+For this project, the target is:
 
 - Domain does not depend on Spring, JPA, HTTP, Jackson, repositories, DTOs, or
-  DataMappers.
-- Use cases do not depend on controllers, HTTP types, Spring Data, JPA,
-  repositories, or DataMappers.
-- Gateways are use-case ports. Their contracts should describe what the use case
-  needs, not how JPA stores it.
-- Persistence adapters translate between gateway contracts and JPA/DataMappers.
-- Controllers translate HTTP into input-boundary calls and HTTP responses.
+  DataMappers/JPA entities.
+- Application (services) does not depend on adapters, controllers, HTTP types,
+  Spring Data, JPA, repositories, or DataMappers/JPA entities.
+- Ports are interfaces owned by application. `port.in` are use cases (driving
+  side); `port.out` are gateways, presenters, and user providers (driven side).
+  Their contracts describe what the use case needs, not how JPA stores it.
+- Outbound adapters (`adapters.out`) implement `port.out` and translate between
+  port contracts and JPA entities.
+- Inbound adapters (`adapters.in`) translate HTTP into `port.in` calls and HTTP
+  responses. `adapters.in` must not access `adapters.out`.
 
 When a dependency points outward from an inner layer to an outer layer, identify
 it as an architectural violation or debt. Explain the exact direction that is
@@ -262,7 +298,9 @@ When changing persistence, inspect:
 
 Some use-case gateways and interactors currently expose or import persistence `DataMapper` classes.
 
-Treat this as confirmed architectural debt.
+Treat this as confirmed architectural debt (an inversion of the dependency rule:
+`useCase` -> `adapters`). It is tracked in `specs/hexagonal-archunit/` and
+frozen by ArchUnit (`FreezingArchRule`) until each feature is migrated.
 
 Do not present this as clean or ideal architecture.
 
@@ -271,7 +309,8 @@ When working near one of these classes:
 - Point out the dependency direction problem.
 - Explain which inner layer is depending on an outer layer.
 - Explain the practical consequence.
-- Suggest the clean architecture version.
+- Suggest the Hexagonal version (port owned by application, JPA entity inside
+  `adapters.out`).
 - Propose the smallest safe improvement for the current task.
 - Do not refactor the whole application unless explicitly requested.
 
@@ -301,7 +340,7 @@ For an explicit refactor:
 
 ## Spring Boot and Java guidance
 
-If an existing project pattern conflicts with Clean Architecture or Spring Boot
+If an existing project pattern conflicts with the Hexagonal target or Spring Boot
 best practices, guide the developer toward the better option and explain why.
 Do not present the existing pattern as ideal only because it is already used.
 
@@ -488,7 +527,7 @@ When guiding the user, be concrete and educational:
 - Start with the conclusion.
 - Show the evidence in files and lines.
 - Explain the layer responsibility.
-- Explain what is wrong when Clean Architecture is violated.
+- Explain what is wrong when the Hexagonal rules are violated.
 - Explain how to recognize the same problem in the future.
 - Give the next safe step.
 - Prefer examples from this repository.
@@ -496,7 +535,7 @@ When guiding the user, be concrete and educational:
 For review-only tasks, classify findings as:
 
 - Confirmed defect.
-- Clean Architecture violation.
+- Hexagonal architecture violation (dependency direction, ports).
 - Architectural debt.
 - Project inconsistency.
 - Optional improvement.
