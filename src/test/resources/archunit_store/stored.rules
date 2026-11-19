@@ -1,0 +1,6 @@
+#
+#Wed Nov 18 21:51:52 GMT-03:00 2026
+no\ classes\ that\ reside\ in\ a\ package\ '..useCase..'\ should\ depend\ on\ classes\ that\ reside\ in\ a\ package\ '..adapters..',\ because\ application\ use\ cases\ must\ not\ depend\ on\ infrastructure\ adapters=9b335476-9270-4c73-97a0-ff08b8ed536a
+no\ classes\ that\ reside\ in\ a\ package\ '..useCase..'\ should\ depend\ on\ classes\ that\ reside\ in\ a\ package\ '..config..',\ because\ configuration\ may\ wire\ application\ components,\ but\ application\ must\ not\ depend\ on\ configuration=10d68992-b71f-439f-941d-d2bbda6879e4
+no\ classes\ that\ reside\ in\ a\ package\ '..useCase.request..'\ should\ depend\ on\ classes\ that\ reside\ in\ a\ package\ 'jakarta..',\ because\ request\ DTOs\ in\ the\ application\ layer\ should\ be\ framework\ agnostic=8684db57-2a94-4798-be58-925ea3c0a2c4
+slices\ matching\ 'com.ndlcommerce.(*)..'\ should\ be\ free\ of\ cycles,\ because\ cyclic\ package\ dependencies\ undermine\ independent\ layers\ and\ inward\ dependency\ flow=680d4d09-c9a2-4107-99ff-c45b492399d6
