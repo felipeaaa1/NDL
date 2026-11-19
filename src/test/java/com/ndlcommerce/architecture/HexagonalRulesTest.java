@@ -8,30 +8,33 @@ import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+import com.tngtech.archunit.library.freeze.FreezingArchRule;
 
 @AnalyzeClasses(packages = "com.ndlcommerce", importOptions = ImportOption.DoNotIncludeTests.class)
 public class HexagonalRulesTest {
 
   @ArchTest
   public static final ArchRule current_use_cases_should_not_depend_on_adapters =
-      noClasses()
-          .that()
-          .resideInAPackage("..useCase..")
-          .should()
-          .dependOnClassesThat()
-          .resideInAPackage("..adapters..")
-          .because("application use cases must not depend on infrastructure adapters");
+      FreezingArchRule.freeze(
+          noClasses()
+              .that()
+              .resideInAPackage("..useCase..")
+              .should()
+              .dependOnClassesThat()
+              .resideInAPackage("..adapters..")
+              .because("application use cases must not depend on infrastructure adapters"));
 
   @ArchTest
   public static final ArchRule current_use_cases_should_not_depend_on_config =
-      noClasses()
-          .that()
-          .resideInAPackage("..useCase..")
-          .should()
-          .dependOnClassesThat()
-          .resideInAPackage("..config..")
-          .because(
-              "configuration may wire application components, but application must not depend on configuration");
+      FreezingArchRule.freeze(
+          noClasses()
+              .that()
+              .resideInAPackage("..useCase..")
+              .should()
+              .dependOnClassesThat()
+              .resideInAPackage("..config..")
+              .because(
+                  "configuration may wire application components, but application must not depend on configuration"));
 
   @ArchTest
   public static final ArchRule current_entities_should_not_depend_on_outer_layers =
@@ -57,13 +60,14 @@ public class HexagonalRulesTest {
 
   @ArchTest
   public static final ArchRule current_request_dtos_should_not_depend_on_jakarta =
-      noClasses()
-          .that()
-          .resideInAPackage("..useCase.request..")
-          .should()
-          .dependOnClassesThat()
-          .resideInAPackage("jakarta..")
-          .because("request DTOs in the application layer should be framework agnostic");
+      FreezingArchRule.freeze(
+          noClasses()
+              .that()
+              .resideInAPackage("..useCase.request..")
+              .should()
+              .dependOnClassesThat()
+              .resideInAPackage("jakarta..")
+              .because("request DTOs in the application layer should be framework agnostic"));
 
   @ArchTest
   public static final ArchRule current_use_case_ports_should_be_interfaces =
@@ -155,10 +159,11 @@ public class HexagonalRulesTest {
 
   @ArchTest
   public static final ArchRule current_packages_should_be_free_of_cycles =
-      slices()
-          .matching("com.ndlcommerce.(*)..")
-          .should()
-          .beFreeOfCycles()
-          .because(
-              "cyclic package dependencies undermine independent layers and inward dependency flow");
+      FreezingArchRule.freeze(
+          slices()
+              .matching("com.ndlcommerce.(*)..")
+              .should()
+              .beFreeOfCycles()
+              .because(
+                  "cyclic package dependencies undermine independent layers and inward dependency flow"));
 }
