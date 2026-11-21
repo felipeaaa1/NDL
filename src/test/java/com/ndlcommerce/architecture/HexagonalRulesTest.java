@@ -43,7 +43,7 @@ public class HexagonalRulesTest {
           .resideInAPackage("..entity..")
           .should()
           .dependOnClassesThat()
-          .resideInAnyPackage("..adapters..", "..config..", "..useCase..")
+          .resideInAnyPackage("..adapters..", "..config..", "..useCase..", "..application..")
           .because(
               "domain entities must remain independent of outer application and infrastructure layers");
 
@@ -85,7 +85,7 @@ public class HexagonalRulesTest {
           .resideInAPackage("..adapters.web..")
           .should()
           .dependOnClassesThat()
-          .resideInAPackage("..adapters.persistence..")
+          .resideInAnyPackage("..adapters.persistence..", "..adapters.out..")
           .because("web adapters must call application boundaries instead of persistence directly");
 
   // Target packages are empty until migration; legacy rules above remain active meanwhile.
@@ -96,7 +96,7 @@ public class HexagonalRulesTest {
           .resideInAPackage("..domain..")
           .should()
           .dependOnClassesThat()
-          .resideInAnyPackage("..application..", "..adapters..", "..config..")
+          .resideInAnyPackage("..application..", "..useCase..", "..adapters..", "..config..")
           .because("the domain is the innermost layer and must not depend on outer layers")
           .allowEmptyShould(true);
 
@@ -142,7 +142,7 @@ public class HexagonalRulesTest {
           .resideInAPackage("..adapters.in..")
           .should()
           .dependOnClassesThat()
-          .resideInAPackage("..adapters.out..")
+          .resideInAnyPackage("..adapters.out..", "..adapters.persistence..")
           .because(
               "inbound adapters must use application ports rather than bypassing them for outbound adapters")
           .allowEmptyShould(true);
