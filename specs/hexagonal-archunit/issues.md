@@ -75,15 +75,15 @@ simples: a migração de plataforma não deve antecipar regras arquiteturais.
 contratos HTTP, JWT, regras de negócio e as trilhas 2 e 3.
 
 **Tarefas:**
-- [ ] Atualizar a plataforma e compilação em `pom.xml`: Spring Boot `3.5.6`,
+- [x] Atualizar a plataforma e compilação em `pom.xml`: Spring Boot `3.5.6`,
       `java.version`/`release` `25` e compiler plugin herdado na versão
       `3.14.0`; manter os annotation processors existentes e confirmar
       Lombok `1.18.40` gerenciado. Não fixar um plugin antigo nem remover
       processadores.
   - [x] Implementação estática: parent Boot `3.5.6`, Java/release `25`,
         compiler herdado e annotation processors preservados no POM.
-  - [ ] Confirmar versões efetivas do compiler e Lombok após resolver o parent.
-- [ ] Alinhar dependências e plugins que precisam acompanhar a plataforma em
+  - [x] Confirmar versões efetivas do compiler e Lombok após resolver o parent.
+- [x] Alinhar dependências e plugins que precisam acompanhar a plataforma em
       `pom.xml`: Spotless `3.0.0` com Google Java Format `1.30.0`, Springdoc
       `2.8.9` e Flyway PostgreSQL/plugin em `11.7.2` gerenciado. Manter
       Hypersistence `hibernate-63:3.8.3`, JaCoCo `0.8.14` e ArchUnit `1.5.1`;
@@ -91,7 +91,7 @@ contratos HTTP, JWT, regras de negócio e as trilhas 2 e 3.
   - [x] Implementação estática: Spotless `3.0.0`, Google Java Format `1.30.0`,
         Springdoc `2.8.9` e Flyway sob gerenciamento; demais declarações
         preservadas conforme QA.
-  - [ ] Confirmar versões efetivamente resolvidas, inclusive Flyway gerenciado.
+  - [x] Confirmar versões efetivamente resolvidas, inclusive Flyway gerenciado.
 - [ ] Com JDK 25 disponível, validar a configuração Maven local antes da
       T1-02: `./mvnw clean verify` e `./mvnw spotless:check` (Windows:
       `mvnw.cmd clean verify` e `mvnw.cmd spotless:check`). Se o ambiente não
@@ -287,15 +287,15 @@ mas **novas** violações precisam ser barradas.
 (`.and(not(exceptions))`).
 
 **Tarefas:**
-- [ ] Envolver as regras da T1-03 com `FreezingArchRule.freeze`.
-- [ ] Criar `src/test/resources/archunit.properties` apontando o store para
+- [x] Envolver as regras da T1-03 com `FreezingArchRule.freeze`.
+- [x] Criar `src/test/resources/archunit.properties` apontando o store para
       `src/test/resources/archunit_store` (commitado).
-- [ ] Gerar o store inicial (primeira execução) e commitar.
-- [ ] Documentar a política em `docs/arquitetura-violacoes.md`: o store só
+- [x] Gerar o store inicial (primeira execução) e commitar.
+- [x] Documentar a política em `docs/arquitetura-violacoes.md`: o store só
       pode **encolher**; PR que o aumenta é rejeitado.
-- [ ] Provar: criar uma violação nova -> build falha; corrigir uma antiga ->
-      linha some do store (`freeze.refreeze`/ `allowStoreUpdate`).
-- [ ] Comparar com a abordagem de lista de exceções e anotar prós/contras.
+- [x] Provar que uma violação nova faz o teste falhar.
+- [x] Provar que corrigir uma violação antiga remove sua entrada do store.
+- [x] Comparar com a abordagem de lista de exceções e anotar prós/contras.
 
 **Dicas/perguntas:**
 - O que identifica uma violação no store: linha de código ou descrição? O que
@@ -323,16 +323,15 @@ silenciosamente.
 
 **Objetivo:** CI com step dedicado e falha clara.
 
-**O que você vai aprender:** steps nomeados, `-Dtest=` por pacote,
-upload de relatório, proteger o store com `git diff --exit-code`.
+**O que você vai aprender:** steps nomeados, `-Dtest=` por pacote e proteger
+o store com `git diff --exit-code`.
 
 **Tarefas:**
 - [ ] Adicionar step "Architecture rules" antes do build completo, rodando
-      `mvn -B -Dtest='com.ndlcommerce.architecture.*' test` (falha cedo).
+      `./mvnw -B -Dtest=ArchitectureSmokeTest,HexagonalRulesTest test` (falha cedo).
 - [ ] Garantir `freeze.store.default.allowStoreUpdate=false` no CI (via
       `-Darchunit.freeze.store.default.allowStoreUpdate=false`).
 - [ ] Step final: `git diff --exit-code src/test/resources/archunit_store`.
-- [ ] Incluir `target/surefire-reports` das regras no artefato existente.
 - [ ] Abrir PR de teste que viola uma regra e ver o CI vermelho.
 
 **Dicas/perguntas:**
@@ -345,7 +344,7 @@ upload de relatório, proteger o store com `git diff --exit-code`.
 **Arquivos prováveis:** `.github/workflows/ci.yml`.
 
 **Critério de pronto:** PR com violação nova fica vermelho no Actions;
-PR sem violação fica verde. Local: `./mvnw -B -Dtest='com.ndlcommerce.architecture.*' test`.
+PR sem violação fica verde. Local: `./mvnw -B -Dtest=ArchitectureSmokeTest,HexagonalRulesTest test`.
 
 **Dependências:** T1-04.
 **Labels:** `trilha-1`, `ci`, `archunit`.
@@ -635,7 +634,7 @@ aprendeu para impedir regressão e servir de molde às outras features.
 **Arquivos prováveis:** `src/test/java/com/ndlcommerce/architecture/*`,
 `src/test/resources/archunit_store/*`.
 
-**Critério de pronto:** `./mvnw -Dtest='com.ndlcommerce.architecture.*' test`
+**Critério de pronto:** `./mvnw -Dtest=ArchitectureSmokeTest,HexagonalRulesTest test`
 verde; diff do store só com linhas **removidas**.
 
 **Dependências:** T1-12.
