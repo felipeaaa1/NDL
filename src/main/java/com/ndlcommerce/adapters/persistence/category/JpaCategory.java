@@ -5,6 +5,7 @@ import com.ndlcommerce.config.SecurityFilter;
 import com.ndlcommerce.useCase.interfaces.category.CategoryRegisterDsGateway;
 import com.ndlcommerce.useCase.model.PaginatedResult;
 import com.ndlcommerce.useCase.request.category.CategoryDbRequestDTO;
+import com.ndlcommerce.useCase.request.category.CategoryResponseDTO;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.*;
@@ -24,13 +25,14 @@ public class JpaCategory implements CategoryRegisterDsGateway {
   }
 
   @Override
-  public CategoryDataMapper save(CategoryDbRequestDTO dbRequest) {
+  public CategoryResponseDTO save(CategoryDbRequestDTO dbRequest) {
 
     UserDataMapper userLogado = securityFilter.obterUsuarioLogado();
 
     CategoryDataMapper categoryDataMapper =
         new CategoryDataMapper(dbRequest.name(), dbRequest.parentId(), userLogado.getId());
-    return repository.save(categoryDataMapper);
+    CategoryDataMapper categoryMapper = repository.save(categoryDataMapper);
+    return mapperToDTO(categoryMapper);
   }
 
   @Override
@@ -39,7 +41,7 @@ public class JpaCategory implements CategoryRegisterDsGateway {
   }
 
   @Override
-  public PaginatedResult<CategoryDataMapper> list(
+  public PaginatedResult<CategoryResponseDTO> list(
       CategoryDbRequestDTO request, int page, int size) {
 
     CategoryDataMapper dataMapper =
@@ -58,9 +60,9 @@ public class JpaCategory implements CategoryRegisterDsGateway {
 
     Page<CategoryDataMapper> categoryDataMapperPage = repository.findAll(example, pageable);
 
-    PaginatedResult<CategoryDataMapper> resultCategoryDataMapper =
+    PaginatedResult<CategoryResponseDTO> resultCategoryDataMapper =
         new PaginatedResult<>(
-            categoryDataMapperPage.getContent(),
+            categoryDataMapperPage.getContent().stream().map(this::mapperToDTO).toList(),
             categoryDataMapperPage.getNumber(),
             categoryDataMapperPage.getSize(),
             categoryDataMapperPage.getTotalElements(),
@@ -72,8 +74,10 @@ public class JpaCategory implements CategoryRegisterDsGateway {
   }
 
   @Override
-  public Optional<CategoryDataMapper> getById(UUID uuid) {
-    return repository.findById(uuid);
+  public Optional<CategoryResponseDTO> getById(UUID uuid) {
+    Optional<CategoryDataMapper> mapperById = repository.findById(uuid);
+
+    return mapperById.map(this::mapperToDTO);
   }
 
   @Override
@@ -82,7 +86,7 @@ public class JpaCategory implements CategoryRegisterDsGateway {
   }
 
   @Override
-  public CategoryDataMapper update(UUID categoryUUID, CategoryDbRequestDTO categoryDbRequestDTO) {
+  public CategoryResponseDTO update(UUID categoryUUID, CategoryDbRequestDTO categoryDbRequestDTO) {
     Optional<CategoryDataMapper> categoryOptional = repository.findById(categoryUUID);
 
     if (categoryOptional.isEmpty()) {
@@ -103,7 +107,8 @@ public class JpaCategory implements CategoryRegisterDsGateway {
             : categoryDbRequestDTO.getParentId());
     categoryDataMapper.setUpdatedBy(userLogado.getId());
 
-    return repository.save(categoryDataMapper);
+    CategoryDataMapper savedMapper = repository.save(categoryDataMapper);
+    return mapperToDTO(savedMapper);
   }
 
   @Override
@@ -123,5 +128,10 @@ public class JpaCategory implements CategoryRegisterDsGateway {
     categoryDataMapper.setActive(false);
 
     repository.save(categoryDataMapper);
+  }
+
+  private CategoryResponseDTO mapperToDTO(CategoryDataMapper mapper) {
+    return new CategoryResponseDTO(
+        mapper.getId(), mapper.getName(), mapper.getParentId(), mapper.getCreatedAt().toString());
   }
 }

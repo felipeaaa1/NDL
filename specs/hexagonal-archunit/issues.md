@@ -75,15 +75,15 @@ simples: a migração de plataforma não deve antecipar regras arquiteturais.
 contratos HTTP, JWT, regras de negócio e as trilhas 2 e 3.
 
 **Tarefas:**
-- [ ] Atualizar a plataforma e compilação em `pom.xml`: Spring Boot `3.5.6`,
+- [x] Atualizar a plataforma e compilação em `pom.xml`: Spring Boot `3.5.6`,
       `java.version`/`release` `25` e compiler plugin herdado na versão
       `3.14.0`; manter os annotation processors existentes e confirmar
       Lombok `1.18.40` gerenciado. Não fixar um plugin antigo nem remover
       processadores.
   - [x] Implementação estática: parent Boot `3.5.6`, Java/release `25`,
         compiler herdado e annotation processors preservados no POM.
-  - [ ] Confirmar versões efetivas do compiler e Lombok após resolver o parent.
-- [ ] Alinhar dependências e plugins que precisam acompanhar a plataforma em
+  - [x] Confirmar versões efetivas do compiler e Lombok após resolver o parent.
+- [x] Alinhar dependências e plugins que precisam acompanhar a plataforma em
       `pom.xml`: Spotless `3.0.0` com Google Java Format `1.30.0`, Springdoc
       `2.8.9` e Flyway PostgreSQL/plugin em `11.7.2` gerenciado. Manter
       Hypersistence `hibernate-63:3.8.3`, JaCoCo `0.8.14` e ArchUnit `1.5.1`;
@@ -91,7 +91,7 @@ contratos HTTP, JWT, regras de negócio e as trilhas 2 e 3.
   - [x] Implementação estática: Spotless `3.0.0`, Google Java Format `1.30.0`,
         Springdoc `2.8.9` e Flyway sob gerenciamento; demais declarações
         preservadas conforme QA.
-  - [ ] Confirmar versões efetivamente resolvidas, inclusive Flyway gerenciado.
+  - [x] Confirmar versões efetivamente resolvidas, inclusive Flyway gerenciado.
 - [ ] Com JDK 25 disponível, validar a configuração Maven local antes da
       T1-02: `./mvnw clean verify` e `./mvnw spotless:check` (Windows:
       `mvnw.cmd clean verify` e `mvnw.cmd spotless:check`). Se o ambiente não
@@ -150,7 +150,7 @@ contratos ou ampliar as trilhas 2 e 3.
 
 **Necessidade/contexto:** originalmente o `pom.xml` não tinha ArchUnit;
 a dependência e o teste de fumaça agora estão implementados, com validação
-bloqueada conforme as evidências abaixo.
+do teste de fumaça registrada nas evidências abaixo.
 
 **Objetivo:** dependência funcionando com uma regra trivial.
 
@@ -161,10 +161,10 @@ bloqueada conforme as evidências abaixo.
 - [x] Adicionar `com.tngtech.archunit:archunit-junit5` com `<scope>test`
       (confira a última versão estável no Maven Central).
 - [x] Criar `src/test/java/com/ndlcommerce/architecture/ArchitectureSmokeTest`.
-- [x] Declarar uma regra simples: "nenhuma classe depende de `java.util.logging`",
+- [x] Declarar uma regra simples contra atribuições a campos de tipos de `java.util.logging`,
       usando a regra padrão `NO_CLASSES_SHOULD_USE_JAVA_UTIL_LOGGING`.
-- [ ] Executar a regra e vê-la passar.
-- [ ] Depois forçar falha e ler a mensagem; restaurar e comprovar nova passagem.
+- [x] Executar a regra e vê-la passar.
+- [x] Depois forçar falha e ler a mensagem; restaurar e comprovar nova passagem.
 - [x] Importar só `com.ndlcommerce` e excluir testes.
 
 **Dicas/perguntas:**
@@ -178,7 +178,20 @@ bloqueada conforme as evidências abaixo.
 **Critério de pronto:** `./mvnw -Dtest=ArchitectureSmokeTest test` verde;
 alterando a regra para algo falso ele falha com mensagem legível.
 
-**Status:** implementada; validação bloqueada. Não declarar T1-02 concluída.
+**Status:** implementação e ciclo do teste de fumaça verificados.
+As pendências do pré-requisito técnico Java 25 permanecem registradas acima.
+
+**Evidências — acompanhamento, 2026-11-18:**
+- Execução pelo assistente com Java `25.0.4.1`:
+  `.\mvnw.cmd "-Dtest=ArchitectureSmokeTest" test`; 1 teste, sem falhas ou erros.
+- A chamada direta `Logger.getLogger(...).info(...)` passou. A inspeção do
+  bytecode confirmou que a regra padrão do ArchUnit `1.5.1` verifica atribuições
+  a campos de tipos de `java.util.logging`, não toda dependência desse pacote.
+- O estudante confirmou falha ao introduzir o campo de logger e sucesso após
+  removê-lo, mantendo a regra original. Esse ciclo foi executado pelo estudante,
+  não pelo assistente.
+- Este registro não comprova `clean verify`, CI ou build Docker, nem encerra
+  suas pendências anteriores. As evidências de QA abaixo são históricas.
 
 **Evidências — QA independente Carla, 2026-11-17:**
 - Inspeção estática confirmou `archunit-junit5:1.5.1` em escopo `test`,
@@ -222,12 +235,27 @@ medir.
 `onionArchitecture()`, relatório de violações.
 
 **Tarefas:**
-- [ ] Criar `HexagonalRulesTest` com as regras na **nomenclatura alvo**
+- [x] Criar `HexagonalRulesTest` com as regras na **nomenclatura alvo**
       (`..domain..`, `..application..`, `..adapters.in..`, `..adapters.out..`).
-- [ ] Rodar contra o estado atual (como os pacotes ainda são `entity` /
-      `useCase`, escreva uma versão "atual" das mesmas ideias) e copiar o
-      relatório de violações para a descrição do PR.
-- [ ] Contar violações por tipo (useCase->adapters, DTO->jakarta, etc.).
+- [x] Rodar contra o estado atual (como os pacotes ainda são `entity` /
+      `useCase`, escreva uma versão "atual" das mesmas ideias).
+- [x] Copiar o relatório de violações para a descrição do PR #30.
+- [x] Contar violações por tipo (useCase->adapters, DTO->jakarta, etc.).
+
+**Evidências — acompanhamento, 2026-11-18:**
+- Commit `856f36e` adiciona as regras ArchUnit da T1-03.
+- `.\mvnw.cmd "-Dtest=HexagonalRulesTest" test`: 14 regras executadas,
+  4 falharam listando violações (esperado nesta issue), 0 erros.
+- Violações reportadas: `useCase -> adapters` (87), `useCase -> config` (3),
+  `useCase.request -> jakarta` (47) e ciclos entre pacotes (3). As contagens
+  representam dependências/ciclos detectados e podem se sobrepor.
+- `.\mvnw.cmd spotless:check`: passou.
+- O resumo da execução e das violações foi incluído na descrição do PR #30.
+- As regras do layout-alvo usam `allowEmptyShould(true)` enquanto seus pacotes
+  não existem; portanto, ainda não validam classes migradas.
+
+**Status:** T1-03 concluída; a implementação, a medição e a evidência no PR
+foram verificadas.
 
 **Dicas/perguntas:**
 - `layeredArchitecture().consideringOnlyDependenciesInLayers()` — o que muda?
@@ -259,15 +287,15 @@ mas **novas** violações precisam ser barradas.
 (`.and(not(exceptions))`).
 
 **Tarefas:**
-- [ ] Envolver as regras da T1-03 com `FreezingArchRule.freeze`.
-- [ ] Criar `src/test/resources/archunit.properties` apontando o store para
+- [x] Envolver as regras da T1-03 com `FreezingArchRule.freeze`.
+- [x] Criar `src/test/resources/archunit.properties` apontando o store para
       `src/test/resources/archunit_store` (commitado).
-- [ ] Gerar o store inicial (primeira execução) e commitar.
-- [ ] Documentar a política em `docs/arquitetura-violacoes.md`: o store só
+- [x] Gerar o store inicial (primeira execução) e commitar.
+- [x] Documentar a política em `docs/arquitetura-violacoes.md`: o store só
       pode **encolher**; PR que o aumenta é rejeitado.
-- [ ] Provar: criar uma violação nova -> build falha; corrigir uma antiga ->
-      linha some do store (`freeze.refreeze`/ `allowStoreUpdate`).
-- [ ] Comparar com a abordagem de lista de exceções e anotar prós/contras.
+- [x] Provar que uma violação nova faz o teste falhar.
+- [x] Provar que corrigir uma violação antiga remove sua entrada do store.
+- [x] Comparar com a abordagem de lista de exceções e anotar prós/contras.
 
 **Dicas/perguntas:**
 - O que identifica uma violação no store: linha de código ou descrição? O que
@@ -295,16 +323,15 @@ silenciosamente.
 
 **Objetivo:** CI com step dedicado e falha clara.
 
-**O que você vai aprender:** steps nomeados, `-Dtest=` por pacote,
-upload de relatório, proteger o store com `git diff --exit-code`.
+**O que você vai aprender:** steps nomeados, `-Dtest=` por pacote e proteger
+o store com `git diff --exit-code`.
 
 **Tarefas:**
 - [ ] Adicionar step "Architecture rules" antes do build completo, rodando
-      `mvn -B -Dtest='com.ndlcommerce.architecture.*' test` (falha cedo).
+      `./mvnw -B -Dtest=ArchitectureSmokeTest,HexagonalRulesTest test` (falha cedo).
 - [ ] Garantir `freeze.store.default.allowStoreUpdate=false` no CI (via
       `-Darchunit.freeze.store.default.allowStoreUpdate=false`).
 - [ ] Step final: `git diff --exit-code src/test/resources/archunit_store`.
-- [ ] Incluir `target/surefire-reports` das regras no artefato existente.
 - [ ] Abrir PR de teste que viola uma regra e ver o CI vermelho.
 
 **Dicas/perguntas:**
@@ -317,7 +344,7 @@ upload de relatório, proteger o store com `git diff --exit-code`.
 **Arquivos prováveis:** `.github/workflows/ci.yml`.
 
 **Critério de pronto:** PR com violação nova fica vermelho no Actions;
-PR sem violação fica verde. Local: `./mvnw -B -Dtest='com.ndlcommerce.architecture.*' test`.
+PR sem violação fica verde. Local: `./mvnw -B -Dtest=ArchitectureSmokeTest,HexagonalRulesTest test`.
 
 **Dependências:** T1-04.
 **Labels:** `trilha-1`, `ci`, `archunit`.
@@ -607,7 +634,7 @@ aprendeu para impedir regressão e servir de molde às outras features.
 **Arquivos prováveis:** `src/test/java/com/ndlcommerce/architecture/*`,
 `src/test/resources/archunit_store/*`.
 
-**Critério de pronto:** `./mvnw -Dtest='com.ndlcommerce.architecture.*' test`
+**Critério de pronto:** `./mvnw -Dtest=ArchitectureSmokeTest,HexagonalRulesTest test`
 verde; diff do store só com linhas **removidas**.
 
 **Dependências:** T1-12.
