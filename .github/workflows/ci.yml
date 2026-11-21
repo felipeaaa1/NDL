@@ -30,9 +30,13 @@ jobs:
           java-version: '25'
           cache: maven
 
+      # comando inicial do Maven Wrapper, que baixa o Maven se necessário, da permissões  e roda o comando.
       - name: Make Maven Wrapper executable
         run: chmod +x mvnw
 
+      # roda os testes de arquitetura hexagonal, que estão no pacote com.ndlcommerce.architecture.
+      - name: Check hexagonal architecture
+        run: ./mvnw -B -Dtest=ArchitectureSmokeTest,HexagonalRulesTest -Darchunit.freeze.store.default.allowStoreUpdate=false test
       - name: Check Java formatting
         run: ./mvnw -B spotless:check
 
@@ -41,6 +45,13 @@ jobs:
       # -DskipTests=false é redundante, mas garante que os testes rodem mesmo se alguém colocou isso no pom.
       - name: Build and run tests
         run: ./mvnw -DskipTests=false -B clean verify
+
+
+      # o passo abaixo verifica se houve alterações no diretório src/test/resources/archunit_store.
+      # se houver alterações, o comando git diff retorna um código de saída diferente de zero,
+      # fazendo o passo falhar e, consequentemente, o workflow falhar.
+      - name: Check architecture store
+        run: git diff --exit-code src/test/resources/archunit_store
 
       # salva os resultados dos testes como artefato do workflow.
       # isso permite baixar ou inspecionar os relatórios depois.
