@@ -47,6 +47,38 @@ public class BrandResponseFormatterTest {
   }
 
   @Test
+  void givenNullResponse_whenPrepareSuccessView_thenReturnNull() {
+    assertThat(brandResponseFormatter.prepareSuccessView(null)).isNull();
+  }
+
+  @Test
+  void givenNullList_whenPrepareListSuccessView_thenReturnEmptyPage() {
+    PaginatedResult<BrandResponseDTO> result = brandResponseFormatter.prepareListSuccessView(null);
+
+    assertThat(result.getContent()).isEmpty();
+    assertThat(result.getTotalElements()).isZero();
+  }
+
+  @Test
+  void givenNotFoundError_whenPrepareFailView_thenThrowNoSuchElementException() {
+    assertThatThrownBy(() -> brandResponseFormatter.prepareFailView("NotFound"))
+        .isInstanceOf(java.util.NoSuchElementException.class);
+  }
+
+  @Test
+  void givenNameNotValidError_whenPrepareFailView_thenThrowBusinessException() {
+    assertThatThrownBy(() -> brandResponseFormatter.prepareFailView("NameNotValid"))
+        .isInstanceOf(com.ndlcommerce.config.exception.BusinessException.class);
+  }
+
+  @Test
+  void givenUnknownError_whenPrepareFailView_thenThrowRuntimeException() {
+    assertThatThrownBy(() -> brandResponseFormatter.prepareFailView("Other"))
+        .isInstanceOf(RuntimeException.class)
+        .hasMessageContaining("Other");
+  }
+
+  @Test
   void givenExistByNameError_whenPrepareFailView_thenThrowEntityAlreadyExistsException() {
     assertThatThrownBy(() -> brandResponseFormatter.prepareFailView("ExistByName"))
         .isInstanceOf(EntityAlreadyExistsException.class);

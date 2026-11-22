@@ -4,7 +4,7 @@ import com.ndlcommerce.adapters.persistence.user.UserDataMapper;
 import com.ndlcommerce.adapters.web.dto.AuthenticationDTO;
 import com.ndlcommerce.adapters.web.dto.LoginResponseDTO;
 import com.ndlcommerce.config.TokenService;
-import com.ndlcommerce.entity.enums.UserType;
+import com.ndlcommerce.domain.UserType;
 import com.ndlcommerce.useCase.interfaces.user.UserInputBoundary;
 import com.ndlcommerce.useCase.request.user.UserRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;

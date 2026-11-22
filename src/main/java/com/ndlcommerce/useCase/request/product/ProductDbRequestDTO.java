@@ -1,6 +1,6 @@
 package com.ndlcommerce.useCase.request.product;
 
-import com.ndlcommerce.entity.model.interfaces.ProductSku;
+import com.ndlcommerce.domain.model.interfaces.ProductSku;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;

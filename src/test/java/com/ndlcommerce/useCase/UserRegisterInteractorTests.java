@@ -6,10 +6,10 @@ import static org.mockito.Mockito.*;
 
 import com.ndlcommerce.adapters.persistence.user.UserDataMapper;
 import com.ndlcommerce.config.EmailService;
-import com.ndlcommerce.entity.enums.UserType;
-import com.ndlcommerce.entity.factory.interfaces.UserFactory;
-import com.ndlcommerce.entity.model.implementation.CommonUser;
-import com.ndlcommerce.entity.model.interfaces.User;
+import com.ndlcommerce.domain.UserType;
+import com.ndlcommerce.domain.factory.interfaces.UserFactory;
+import com.ndlcommerce.domain.model.implementation.CommonUser;
+import com.ndlcommerce.domain.model.interfaces.User;
 import com.ndlcommerce.useCase.interfaces.emailValidation.EmailValidationDsGateway;
 import com.ndlcommerce.useCase.interfaces.user.UserPresenter;
 import com.ndlcommerce.useCase.interfaces.user.UserRegisterDsGateway;

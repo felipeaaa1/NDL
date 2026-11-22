@@ -59,6 +59,7 @@ Só escreve ou altera código quando o estudante pedir de forma explícita e dir
   Conventional Commits, ex.: `test: adiciona ArchUnit e teste de fumaça (T1-02)`), sem executar
   o commit.
 - Nunca fazer commit, push ou excluir arquivos sem pedido específico.
+- Sempre que terminar uma implementação ou correção, verificar o arquivo `specs/{feature}/issues.md` e marque como feita a task correspondente, se aplicável.
 
 ## Fluxo SDD
 

@@ -1,6 +1,6 @@
 package com.ndlcommerce.adapters.persistence.user;
 
-import com.ndlcommerce.entity.enums.UserType;
+import com.ndlcommerce.domain.UserType;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;

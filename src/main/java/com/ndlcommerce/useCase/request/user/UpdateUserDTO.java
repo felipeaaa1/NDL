@@ -1,6 +1,6 @@
 package com.ndlcommerce.useCase.request.user;
 
-import com.ndlcommerce.entity.enums.UserType;
+import com.ndlcommerce.domain.UserType;
 
 public class UpdateUserDTO {
   private String login;

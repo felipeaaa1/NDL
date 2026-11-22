@@ -1,8 +1,7 @@
 package com.ndlcommerce.useCase;
 
-import com.ndlcommerce.adapters.persistence.category.CategoryDataMapper;
-import com.ndlcommerce.entity.factory.interfaces.CategoryFactory;
-import com.ndlcommerce.entity.model.interfaces.Category;
+import com.ndlcommerce.domain.factory.interfaces.CategoryFactory;
+import com.ndlcommerce.domain.model.interfaces.Category;
 import com.ndlcommerce.useCase.interfaces.category.CategoryInputBoundary;
 import com.ndlcommerce.useCase.interfaces.category.CategoryPresenter;
 import com.ndlcommerce.useCase.interfaces.category.CategoryRegisterDsGateway;
@@ -48,12 +47,7 @@ public class CategoryRegisterInteractor implements CategoryInputBoundary {
 
     CategoryDbRequestDTO dbRequest =
         new CategoryDbRequestDTO(category.getName(), requestDTO.getParentId());
-
-    CategoryDataMapper saved = categoryDsGateway.save(dbRequest);
-
-    CategoryResponseDTO response =
-        new CategoryResponseDTO(
-            saved.getId(), saved.getName(), saved.getParentId(), saved.getCreatedAt().toString());
+    CategoryResponseDTO response = categoryDsGateway.save(dbRequest);
 
     return categoryPresenter.prepareSuccessView(response);
   }
@@ -64,11 +58,8 @@ public class CategoryRegisterInteractor implements CategoryInputBoundary {
         new CategoryDbRequestDTO(
             filter != null ? filter.getName() : null, filter != null ? filter.getParentId() : null);
 
-    PaginatedResult<CategoryDataMapper> categoryDataMapperPage =
-        categoryDsGateway.list(request, page, size);
-
     PaginatedResult<CategoryResponseDTO> paginatedResultCategoryResponseDTO =
-        categoryDataMapperPage == null ? null : categoryDataMapperPage.map(this::mapperToDTO);
+        categoryDsGateway.list(request, page, size);
 
     return categoryPresenter.prepareListSuccessView(paginatedResultCategoryResponseDTO);
   }
@@ -76,23 +67,16 @@ public class CategoryRegisterInteractor implements CategoryInputBoundary {
   @Override
   public CategoryResponseDTO getById(UUID uuid) {
 
-    Optional<CategoryDataMapper> optionalCategoryDataMapper = categoryDsGateway.getById(uuid);
-    if (optionalCategoryDataMapper.isEmpty()) {
+    Optional<CategoryResponseDTO> optionalCategoryData = categoryDsGateway.getById(uuid);
+    if (optionalCategoryData.isEmpty()) {
       return categoryPresenter.prepareFailView("NotFound");
     }
-    CategoryDataMapper categoryDataMapper = optionalCategoryDataMapper.get();
-    CategoryResponseDTO responseDTO =
-        new CategoryResponseDTO(
-            categoryDataMapper.getId(),
-            categoryDataMapper.getName(),
-            categoryDataMapper.getParentId(),
-            categoryDataMapper.getCreatedAt().toString());
-    return categoryPresenter.prepareSuccessView(responseDTO);
+    return categoryPresenter.prepareSuccessView(optionalCategoryData.get());
   }
 
   @Override
   public CategoryResponseDTO updateCategory(UUID categoryId, CategoryRequestDTO requestDTO) {
-    Optional<CategoryDataMapper> opt = categoryDsGateway.getById(categoryId);
+    Optional<CategoryResponseDTO> opt = categoryDsGateway.getById(categoryId);
 
     if (opt.isEmpty()) {
       return categoryPresenter.prepareFailView("NotFound");
@@ -110,16 +94,14 @@ public class CategoryRegisterInteractor implements CategoryInputBoundary {
 
     CategoryDbRequestDTO categoryDbRequestDTO =
         new CategoryDbRequestDTO(category.getName(), requestDTO.getParentId());
-    CategoryDataMapper updated = categoryDsGateway.update(categoryId, categoryDbRequestDTO);
+    CategoryResponseDTO updated = categoryDsGateway.update(categoryId, categoryDbRequestDTO);
 
-    CategoryResponseDTO responseDTO = mapperToDTO(updated);
-
-    return categoryPresenter.prepareSuccessView(responseDTO);
+    return categoryPresenter.prepareSuccessView(updated);
   }
 
   @Override
   public Object deleteCategory(UUID categoryId) {
-    Optional<CategoryDataMapper> opt = categoryDsGateway.getById(categoryId);
+    Optional<CategoryResponseDTO> opt = categoryDsGateway.getById(categoryId);
 
     if (opt.isEmpty()) {
       return categoryPresenter.prepareFailView("NotFound");
@@ -128,10 +110,5 @@ public class CategoryRegisterInteractor implements CategoryInputBoundary {
     categoryDsGateway.delete(categoryId);
 
     return categoryPresenter.prepareSuccessView(null);
-  }
-
-  private CategoryResponseDTO mapperToDTO(CategoryDataMapper mapper) {
-    return new CategoryResponseDTO(
-        mapper.getId(), mapper.getName(), mapper.getParentId(), mapper.getCreatedAt().toString());
   }
 }

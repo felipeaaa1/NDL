@@ -4,18 +4,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.ndlcommerce.adapters.persistence.category.CategoryDataMapper;
-import com.ndlcommerce.entity.factory.implementation.CommonProductFactoryImp;
-import com.ndlcommerce.entity.factory.interfaces.ProductFactory;
-import com.ndlcommerce.entity.factory.interfaces.ProductSkuFactory;
-import com.ndlcommerce.entity.model.implementation.CommonProductSku;
-import com.ndlcommerce.entity.model.interfaces.ProductSku;
+import com.ndlcommerce.domain.factory.implementation.CommonProductFactoryImp;
+import com.ndlcommerce.domain.factory.interfaces.ProductFactory;
+import com.ndlcommerce.domain.factory.interfaces.ProductSkuFactory;
+import com.ndlcommerce.domain.model.implementation.CommonProductSku;
+import com.ndlcommerce.domain.model.interfaces.ProductSku;
 import com.ndlcommerce.useCase.interfaces.brand.BrandRegisterDsGateway;
 import com.ndlcommerce.useCase.interfaces.category.CategoryRegisterDsGateway;
 import com.ndlcommerce.useCase.interfaces.product.ProductPresenter;
 import com.ndlcommerce.useCase.interfaces.product.ProductRegisterDsGateway;
 import com.ndlcommerce.useCase.model.SliceResult;
 import com.ndlcommerce.useCase.request.brand.BrandGatewayResponseDTO;
+import com.ndlcommerce.useCase.request.category.CategoryResponseDTO;
 import com.ndlcommerce.useCase.request.product.ProductDbRequestDTO;
 import com.ndlcommerce.useCase.request.product.ProductRequestDTO;
 import com.ndlcommerce.useCase.request.product.ProductResponseDTO;
@@ -329,7 +329,7 @@ class ProductRegisterInteractorTest {
     when(brandRegisterDsGateway.getById(brandId))
         .thenReturn(Optional.of(mock(BrandGatewayResponseDTO.class)));
     when(categoryRegisterDsGateway.getById(categoryId))
-        .thenReturn(Optional.of(mock(CategoryDataMapper.class)));
+        .thenReturn(Optional.of(mock(CategoryResponseDTO.class)));
     return request;
   }
 

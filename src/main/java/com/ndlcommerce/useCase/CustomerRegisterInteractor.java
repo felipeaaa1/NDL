@@ -2,8 +2,8 @@ package com.ndlcommerce.useCase;
 
 import com.ndlcommerce.adapters.persistence.customer.CustomerDataMapper;
 import com.ndlcommerce.adapters.persistence.user.UserDataMapper;
-import com.ndlcommerce.entity.factory.interfaces.CustomerFactory;
-import com.ndlcommerce.entity.model.interfaces.Customer;
+import com.ndlcommerce.domain.factory.interfaces.CustomerFactory;
+import com.ndlcommerce.domain.model.interfaces.Customer;
 import com.ndlcommerce.useCase.interfaces.customer.CustomerInputBoundary;
 import com.ndlcommerce.useCase.interfaces.customer.CustomerPresenter;
 import com.ndlcommerce.useCase.interfaces.customer.CustomerRegisterDsGateway;

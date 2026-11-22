@@ -1,9 +1,9 @@
 package com.ndlcommerce.useCase;
 
-import com.ndlcommerce.entity.factory.interfaces.ProductFactory;
-import com.ndlcommerce.entity.factory.interfaces.ProductSkuFactory;
-import com.ndlcommerce.entity.model.interfaces.Product;
-import com.ndlcommerce.entity.model.interfaces.ProductSku;
+import com.ndlcommerce.domain.factory.interfaces.ProductFactory;
+import com.ndlcommerce.domain.factory.interfaces.ProductSkuFactory;
+import com.ndlcommerce.domain.model.interfaces.Product;
+import com.ndlcommerce.domain.model.interfaces.ProductSku;
 import com.ndlcommerce.useCase.interfaces.brand.BrandRegisterDsGateway;
 import com.ndlcommerce.useCase.interfaces.category.CategoryRegisterDsGateway;
 import com.ndlcommerce.useCase.interfaces.product.ProductInputBoundary;
