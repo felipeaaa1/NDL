@@ -45,8 +45,6 @@ jobs:
       # -DskipTests=false é redundante, mas garante que os testes rodem mesmo se alguém colocou isso no pom.
       - name: Build and run tests
         run: ./mvnw -DskipTests=false -B clean verify
-
-
       # o passo abaixo verifica se houve alterações no diretório src/test/resources/archunit_store.
       # se houver alterações, o comando git diff retorna um código de saída diferente de zero,
       # fazendo o passo falhar e, consequentemente, o workflow falhar.

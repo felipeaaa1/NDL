@@ -150,7 +150,8 @@ contratos ou ampliar as trilhas 2 e 3.
 
 **Necessidade/contexto:** originalmente o `pom.xml` não tinha ArchUnit;
 a dependência e o teste de fumaça agora estão implementados, com validação
-do teste de fumaça registrada nas evidências abaixo.
+do teste de fumaça registrada nas evidências abaixo. A validação completa da
+T1-02 permanece pendente conforme as evidências de QA abaixo.
 
 **Objetivo:** dependência funcionando com uma regra trivial.
 
