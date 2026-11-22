@@ -400,12 +400,13 @@ já retorna `BrandGatewayResponseDTO`, interactor sem imports de `adapters`,
 cobertura (Jacoco já está no `pom.xml`).
 
 **Tarefas:**
-- [ ] Rodar `./mvnw verify` e abrir `target/site/jacoco/index.html`; anotar a
+- [x] Rodar `./mvnw verify` e abrir `target/site/jacoco/index.html`; anotar a
       cobertura de Brand (interactor, controller, JpaBrand, formatter).
-- [ ] Listar cenários sem teste (duplicado, update com mesmo nome, delete
+- [x] Listar cenários sem teste (duplicado, update com mesmo nome, delete
       inexistente, filtro, paginação).
-- [ ] Escrever os testes que faltarem **sem** alterar o código de produção.
-- [ ] Mapear no PR todas as classes e testes de Brand (lista de arquivos).
+- [x] Escrever os testes que faltarem **sem** alterar o código de produção.
+- [x] Mapear no PR todas as classes e testes de Brand (lista de arquivos).
+      Feito no PR #31 (mergeado).
 
 **Dicas/perguntas:**
 - Teste de caracterização documenta o que o código **faz**, não o que
