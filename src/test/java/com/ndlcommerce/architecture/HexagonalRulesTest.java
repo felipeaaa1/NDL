@@ -37,28 +37,6 @@ public class HexagonalRulesTest {
                   "configuration may wire application components, but application must not depend on configuration"));
 
   @ArchTest
-  public static final ArchRule current_entities_should_not_depend_on_outer_layers =
-      noClasses()
-          .that()
-          .resideInAPackage("..entity..")
-          .should()
-          .dependOnClassesThat()
-          .resideInAnyPackage("..adapters..", "..config..", "..useCase..", "..application..")
-          .because(
-              "domain entities must remain independent of outer application and infrastructure layers");
-
-  @ArchTest
-  public static final ArchRule current_entities_should_not_depend_on_frameworks =
-      noClasses()
-          .that()
-          .resideInAPackage("..entity..")
-          .should()
-          .dependOnClassesThat()
-          .resideInAnyPackage("jakarta..", "org.springframework..", "com.fasterxml.jackson..")
-          .because(
-              "domain entities must not depend on framework, persistence, or serialization details");
-
-  @ArchTest
   public static final ArchRule current_request_dtos_should_not_depend_on_jakarta =
       FreezingArchRule.freeze(
           noClasses()
@@ -88,29 +66,29 @@ public class HexagonalRulesTest {
           .resideInAnyPackage("..adapters.persistence..", "..adapters.out..")
           .because("web adapters must call application boundaries instead of persistence directly");
 
-  // Target packages are empty until migration; legacy rules above remain active meanwhile.
+  // Strict (not frozen, not allowEmpty): domain was migrated in T1-06 and must never be empty.
   @ArchTest
-  public static final ArchRule target_domain_should_not_depend_on_outer_layers =
+  public static final ArchRule domain_should_not_depend_on_outer_layers =
       noClasses()
           .that()
           .resideInAPackage("..domain..")
           .should()
           .dependOnClassesThat()
           .resideInAnyPackage("..application..", "..useCase..", "..adapters..", "..config..")
-          .because("the domain is the innermost layer and must not depend on outer layers")
-          .allowEmptyShould(true);
+          .because("the domain is the innermost layer and must not depend on outer layers");
 
   @ArchTest
-  public static final ArchRule target_domain_should_not_depend_on_frameworks =
+  public static final ArchRule domain_should_not_depend_on_frameworks =
       noClasses()
           .that()
           .resideInAPackage("..domain..")
           .should()
           .dependOnClassesThat()
           .resideInAnyPackage("jakarta..", "org.springframework..", "com.fasterxml.jackson..")
-          .because("the domain must not depend on framework, persistence, or serialization details")
-          .allowEmptyShould(true);
+          .because(
+              "the domain must not depend on framework, persistence, or serialization details");
 
+  // Target packages are empty until migration; legacy rules above remain active meanwhile.
   @ArchTest
   public static final ArchRule target_application_should_not_depend_on_adapters =
       noClasses()

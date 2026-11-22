@@ -1,7 +1,7 @@
 package com.ndlcommerce.useCase;
 
-import com.ndlcommerce.entity.factory.interfaces.BrandFactory;
-import com.ndlcommerce.entity.model.interfaces.Brand;
+import com.ndlcommerce.domain.factory.interfaces.BrandFactory;
+import com.ndlcommerce.domain.model.interfaces.Brand;
 import com.ndlcommerce.useCase.interfaces.brand.BrandInputBoundary;
 import com.ndlcommerce.useCase.interfaces.brand.BrandPresenter;
 import com.ndlcommerce.useCase.interfaces.brand.BrandRegisterDsGateway;

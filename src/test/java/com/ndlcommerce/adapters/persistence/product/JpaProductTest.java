@@ -11,7 +11,7 @@ import com.ndlcommerce.adapters.persistence.productSku.JpaProductSkuRepository;
 import com.ndlcommerce.adapters.persistence.productSku.ProductSkuDataMapper;
 import com.ndlcommerce.adapters.persistence.user.UserDataMapper;
 import com.ndlcommerce.config.SecurityFilter;
-import com.ndlcommerce.entity.model.implementation.CommonProductSku;
+import com.ndlcommerce.domain.model.implementation.CommonProductSku;
 import com.ndlcommerce.useCase.model.SliceResult;
 import com.ndlcommerce.useCase.request.product.ProductDbRequestDTO;
 import com.ndlcommerce.useCase.request.product.ProductResponseDTO;

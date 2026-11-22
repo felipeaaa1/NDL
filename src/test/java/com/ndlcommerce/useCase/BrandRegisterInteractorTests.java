@@ -6,9 +6,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import com.ndlcommerce.entity.factory.interfaces.BrandFactory;
-import com.ndlcommerce.entity.model.implementation.CommonBrand;
-import com.ndlcommerce.entity.model.interfaces.Brand;
+import com.ndlcommerce.domain.factory.interfaces.BrandFactory;
+import com.ndlcommerce.domain.model.implementation.CommonBrand;
+import com.ndlcommerce.domain.model.interfaces.Brand;
 import com.ndlcommerce.useCase.interfaces.brand.BrandPresenter;
 import com.ndlcommerce.useCase.interfaces.brand.BrandRegisterDsGateway;
 import com.ndlcommerce.useCase.model.PaginatedResult;

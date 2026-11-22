@@ -362,15 +362,15 @@ PR sem violação fica verde. Local: `./mvnw -B -Dtest=ArchitectureSmokeTest,Hex
 histórico, regra estrita por pacote.
 
 **Tarefas:**
-- [ ] Mover `entity.model.*` -> `domain.model`; `entity.factory.*` ->
-      `domain.factory`; `entity.enums.UserType` -> `domain.model`.
-- [ ] Mover os testes espelhados (`src/test/.../entity/**`).
-- [ ] Conferir o scanner manual em `NdlCommerceApplication` (filtros por
+- [x] Mover `entity.model.*` -> `domain.model`; `entity.factory.*` ->
+      `domain.factory`; `entity.enums.UserType` -> `domain`.
+- [x] Mover os testes espelhados (`src/test/.../entity/**`).
+- [x] Conferir o scanner manual em `NdlCommerceApplication` (filtros por
       nome/pacote).
-- [ ] Remover a regra de `domain` do freeze e deixá-la **estrita**:
+- [x] Remover a regra de `domain` do freeze e deixá-la **estrita**:
       sem `application`, `adapters`, `config`, `org.springframework..`,
       `jakarta..`.
-- [ ] Decidir sobre Lombok em domain (permitido? documente).
+- [x] Decidir sobre Lombok em domain (permitido? documente). Decisão em spec.md (Decisões do domain).
 
 **Dicas/perguntas:**
 - Por que `Common*` + `interfaces` (Brand/CommonBrand)? Faz sentido em
@@ -378,7 +378,7 @@ histórico, regra estrita por pacote.
 - Os `*Factory` são domínio ou aplicação? O que eles precisam conhecer?
 
 **Arquivos prováveis:** `entity/**` -> `domain/**`; testes em
-`src/test/java/com/ndlcommerce/entity/**`.
+`domain`.
 
 **Critério de pronto:** `./mvnw verify` verde; regra estrita de domain
 passa sem congelamento.

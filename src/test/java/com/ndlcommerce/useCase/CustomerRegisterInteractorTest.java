@@ -7,7 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ndlcommerce.entity.factory.interfaces.CustomerFactory;
+import com.ndlcommerce.domain.factory.interfaces.CustomerFactory;
 import com.ndlcommerce.useCase.interfaces.customer.CustomerPresenter;
 import com.ndlcommerce.useCase.interfaces.customer.CustomerRegisterDsGateway;
 import com.ndlcommerce.useCase.interfaces.user.UserRegisterDsGateway;

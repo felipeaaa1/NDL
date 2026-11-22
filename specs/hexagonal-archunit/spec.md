@@ -79,7 +79,7 @@ antes de mexer).
 |------|------|
 | `entity.model.interfaces` / `.implementation` | `domain.model` |
 | `entity.factory.*` | `domain.factory` |
-| `entity.enums.UserType` | `domain.model` |
+| `entity.enums.UserType` | `domain` |
 | `useCase.*Interactor` | `application.service` |
 | `useCase.interfaces.*.*InputBoundary` | `application.port.in` |
 | `useCase.interfaces.*.*DsGateway` | `application.port.out` |
@@ -175,6 +175,37 @@ T1-02.
 - [ ] CI (`.github/workflows/ci.yml`) falha quando uma regra é violada.
 - [ ] `AGENTS.md` descreve a arquitetura hexagonal real.
 - [ ] Comportamento HTTP inalterado (testes de controller verdes).
+
+## Decisões do domain (T1-06)
+
+- **Lombok no domain: não permitido.** O domain é escrito à mão (getters,
+  construtores, `equals`/`hashCode` quando necessários). Motivo: o Lombok gera
+  código em tempo de compilação, o que esconde o contrato do domínio e o
+  acopla a uma ferramenta; além disso o ArchUnit analisa bytecode e **não
+  consegue** impedir o uso (as anotações não ficam no `.class`), então a regra
+  é convenção documentada e verificada em code review. Adapters e DTOs de
+  adapter continuam podendo usar Lombok (fora de escopo trocar).
+- **`UserType`** fica em `com.ndlcommerce.domain` (raiz), não em
+  `domain.model`. Controllers, DTOs e adapters importam do domain; o domain
+  nunca importa de volta.
+- As regras ArchUnit de `domain` são **estritas** (sem freeze e sem
+  `allowEmptyShould`): `domain` não depende de `application`/`useCase`,
+  `adapters`, `config`, `org.springframework..`, `jakarta..` nem Jackson.
+
+### Débito anotado (não alterar na T1-06)
+
+- **`Common*` + `interfaces`** (ex.: `Brand`/`CommonBrand`): cada interface do
+  domain tem uma única implementação. Decisão: colapsar em uma classe concreta
+  por conceito, em issue própria, depois da migração de pacotes.
+- **`*Factory`**: decisão de **remover** os factories e criar os objetos por
+  construtor ou método estático no próprio model (ex.: `Brand.create(...)`),
+  com a validação no domain. Antes, conferir se algum factory
+  (`CommonProductFactoryImp`, `CommonUserFactoryImp`) tem regra além de `new`;
+  se tiver, a regra migra para o model. Remover os factories também elimina o
+  `@ComponentScan` manual de `domain.factory` em `NdlCommerceApplication`.
+- **Cuidado:** a mudança toca domain, interactors, adapters e testes. Exige
+  testes de caracterização do domain antes e não deve ser misturada com
+  "só mover".
 
 ## Riscos e cuidados
 

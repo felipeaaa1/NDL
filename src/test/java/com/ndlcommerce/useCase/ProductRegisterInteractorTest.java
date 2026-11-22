@@ -4,11 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.ndlcommerce.entity.factory.implementation.CommonProductFactoryImp;
-import com.ndlcommerce.entity.factory.interfaces.ProductFactory;
-import com.ndlcommerce.entity.factory.interfaces.ProductSkuFactory;
-import com.ndlcommerce.entity.model.implementation.CommonProductSku;
-import com.ndlcommerce.entity.model.interfaces.ProductSku;
+import com.ndlcommerce.domain.factory.implementation.CommonProductFactoryImp;
+import com.ndlcommerce.domain.factory.interfaces.ProductFactory;
+import com.ndlcommerce.domain.factory.interfaces.ProductSkuFactory;
+import com.ndlcommerce.domain.model.implementation.CommonProductSku;
+import com.ndlcommerce.domain.model.interfaces.ProductSku;
 import com.ndlcommerce.useCase.interfaces.brand.BrandRegisterDsGateway;
 import com.ndlcommerce.useCase.interfaces.category.CategoryRegisterDsGateway;
 import com.ndlcommerce.useCase.interfaces.product.ProductPresenter;

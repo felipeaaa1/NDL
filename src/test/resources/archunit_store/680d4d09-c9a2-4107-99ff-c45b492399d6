@@ -119,7 +119,7 @@ Cycle detected: Slice adapters -> \
     - Constructor <com.ndlcommerce.adapters.web.ProductSkuController.<init>(com.ndlcommerce.useCase.interfaces.productSku.ProductSkuInputBoundary)> has parameter of type <com.ndlcommerce.useCase.interfaces.productSku.ProductSkuInputBoundary> in (ProductSkuController.java:0)\
     (242 further dependencies have been omitted...)\
   2. Dependencies of Slice useCase\
-    - Constructor <com.ndlcommerce.useCase.UserRegisterInteractor.<init>(com.ndlcommerce.useCase.interfaces.user.UserRegisterDsGateway, com.ndlcommerce.useCase.interfaces.user.UserPresenter, com.ndlcommerce.entity.factory.interfaces.UserFactory, com.ndlcommerce.useCase.interfaces.emailValidation.EmailValidationDsGateway, com.ndlcommerce.config.EmailService)> has parameter of type <com.ndlcommerce.config.EmailService> in (UserRegisterInteractor.java:0)\
+    - Constructor <com.ndlcommerce.useCase.UserRegisterInteractor.<init>(com.ndlcommerce.useCase.interfaces.user.UserRegisterDsGateway, com.ndlcommerce.useCase.interfaces.user.UserPresenter, com.ndlcommerce.domain.factory.interfaces.UserFactory, com.ndlcommerce.useCase.interfaces.emailValidation.EmailValidationDsGateway, com.ndlcommerce.config.EmailService)> has parameter of type <com.ndlcommerce.config.EmailService> in (UserRegisterInteractor.java:0)\
     - Field <com.ndlcommerce.useCase.UserRegisterInteractor.emailService> has type <com.ndlcommerce.config.EmailService> in (UserRegisterInteractor.java:0)\
     - Method <com.ndlcommerce.useCase.UserRegisterInteractor.sendValidationToken(java.util.UUID)> calls method <com.ndlcommerce.config.EmailService.sendValidationEmail(java.lang.String, java.lang.String, java.util.UUID)> in (UserRegisterInteractor.java:188)\
   3. Dependencies of Slice config\

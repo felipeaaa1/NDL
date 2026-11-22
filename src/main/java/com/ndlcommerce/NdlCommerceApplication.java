@@ -75,7 +75,7 @@ public class NdlCommerceApplication {
         // UserRegisterInteractor pq não tinha nenhuma classe implementando a UserRegisterDsGateway,
         // que no caso quem ta implementando é a JpaUser.java
         //              ,"com.ndlcommerce.adapters.persistence"
-        "com.ndlcommerce.entity.factory"
+        "com.ndlcommerce.domain.factory"
         // NÃO scanneie "controllers" aqui. Deixe o @SpringBootApplication encontrá-los com o
         // @RestController
         );

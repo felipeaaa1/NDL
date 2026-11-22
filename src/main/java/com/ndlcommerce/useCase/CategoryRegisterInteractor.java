@@ -1,7 +1,7 @@
 package com.ndlcommerce.useCase;
 
-import com.ndlcommerce.entity.factory.interfaces.CategoryFactory;
-import com.ndlcommerce.entity.model.interfaces.Category;
+import com.ndlcommerce.domain.factory.interfaces.CategoryFactory;
+import com.ndlcommerce.domain.model.interfaces.Category;
 import com.ndlcommerce.useCase.interfaces.category.CategoryInputBoundary;
 import com.ndlcommerce.useCase.interfaces.category.CategoryPresenter;
 import com.ndlcommerce.useCase.interfaces.category.CategoryRegisterDsGateway;

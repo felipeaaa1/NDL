@@ -5,7 +5,7 @@ import com.ndlcommerce.adapters.persistence.productSku.ProductSkuDataMapper;
 import com.ndlcommerce.adapters.persistence.user.UserDataMapper;
 import com.ndlcommerce.config.SecurityFilter;
 import com.ndlcommerce.config.exception.BusinessException;
-import com.ndlcommerce.entity.model.interfaces.ProductSku;
+import com.ndlcommerce.domain.model.interfaces.ProductSku;
 import com.ndlcommerce.useCase.interfaces.product.ProductRegisterDsGateway;
 import com.ndlcommerce.useCase.model.SliceResult;
 import com.ndlcommerce.useCase.request.product.ProductDbRequestDTO;
