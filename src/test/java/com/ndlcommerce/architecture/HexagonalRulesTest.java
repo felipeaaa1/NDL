@@ -36,7 +36,6 @@ public class HexagonalRulesTest {
               .because(
                   "configuration may wire application components, but application must not depend on configuration"));
 
-  @ArchTest
   public static final ArchRule current_request_dtos_should_not_depend_on_jakarta =
       FreezingArchRule.freeze(
           noClasses()
